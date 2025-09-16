@@ -15,18 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Table(name = "file_stored")
-@SqlResultSetMapping(
-        name = "FileStoredProjection",
-        classes = @ConstructorResult(
-                targetClass = FileStoredProjection.class,
-                columns = {
-                        @ColumnResult(name = "contentLength", type = Long.class),
-                        @ColumnResult(name = "contentType", type = String.class),
-                        @ColumnResult(name = "originalFileName", type = String.class),
-                        @ColumnResult(name = "path", type = String.class)
-                }
-        )
-)
 public class FileStored {
 
     @Id

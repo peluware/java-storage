@@ -12,10 +12,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,21 +30,18 @@ public final class GridFSStorage extends Storage {
     private final GridFsTemplate template;
     private final GridFsOperations operations;
     private static final String PATH_KEY = "path";
-    private static final String FILE_SIZE_KEY = "filesize";
 
 
     @Override
     protected void internalStore(ToStore toStore) {
-        InputStream;
-                FileInputStream;
+
         var filename = toStore.getFileName();
-        var content = toStore.getStream();
+        var stream = toStore.getStream();
 
         var metadata = new BasicDBObject();
-        metadata.put(FILE_SIZE_KEY, content.length);
-        metadata.put(PATH_KEY, toStore.getCompletePath());
+        metadata.put(PATH_KEY, toStore.getPath());
         metadata.put("dateUpload", LocalDateTime.now());
-        template.store(new ByteArrayInputStream(content), filename, guessContentType(filename), metadata);
+        template.store(stream, filename, guessContentType(filename), metadata);
     }
 
     @Override
@@ -60,8 +54,8 @@ public final class GridFSStorage extends Storage {
         if (metadata == null) throw new StorageException("Metadata not found for file: " + pathFile.getCompletePath());
 
         return Optional.ofNullable(constructStoredFile(
-                operations.getResource(gridFSFile).getContentAsByteArray(),
-                Long.parseLong(metadata.get(FILE_SIZE_KEY).toString()),
+                operations.getResource(gridFSFile).getInputStream(),
+                gridFSFile.getLength(),
                 pathFile.getFileName(),
                 metadata.get(PATH_KEY).toString(),
                 metadata.get("_contentType").toString()
@@ -79,7 +73,7 @@ public final class GridFSStorage extends Storage {
 
         return Optional.of(constructFileInfo(
                 pathFile.getFileName(),
-                Long.parseLong(metadata.get(FILE_SIZE_KEY).toString()),
+                gridFSFile.getLength(),
                 metadata.get(PATH_KEY).toString(),
                 metadata.get("_contentType").toString()
         ));
