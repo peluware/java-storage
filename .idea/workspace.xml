@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;luidmidev&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/luidmidev/java-storage.git&quot;,
+    &quot;accountId&quot;: &quot;af56c38b-e0b5-44ef-9007-1fa16dcfde2d&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.15.1/commons-io-2.15.1-sources.jar!/org/apache/commons/io/IOUtils.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/mongodb/mongodb-driver-sync/5.5.1/mongodb-driver-sync-5.5.1-sources.jar!/com/mongodb/client/MongoIterable.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/mongodb/mongodb-driver-sync/5.5.1/mongodb-driver-sync-5.5.1-sources.jar!/com/mongodb/client/gridfs/GridFSFindIterableImpl.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/data/spring-data-mongodb/4.5.3/spring-data-mongodb-4.5.3-sources.jar!/org/springframework/data/mongodb/gridfs/GridFsTemplate.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2oIOyJW6rdgMju1oFj4HqwxMduC" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.GoogleCloudStorageTest (1).executor": "Run",
+    "JUnit.GoogleCloudStorageTest.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/PeluWare/java/artifacts/storage/storage-google-cloud/src/test/resources/firebase",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-google-cloud\src\test\resources\firebase" />
+      <recent name="C:\dev\artifacts\maven\storage\storage-google-cloud\src\main\resources\firebase" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-google-cloud\src\test\resources" />
+      <recent name="C:\dev\artifacts\maven\storage\storage-google-cloud\src\test\resources" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="io.github.luidmidev.storage.core.exceptions" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.GoogleCloudStorageTest (1)">
+    <configuration name="GoogleCloudStorageTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="storage-google-cloud" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.peluware.storage.google.cloud.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.peluware.storage.google.cloud" />
+      <option name="MAIN_CLASS_NAME" value="com.peluware.storage.google.cloud.GoogleCloudStorageTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GoogleCloudStorageTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="storage-google-cloud" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.github.luidmidev.storage.google.cloud.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="io.github.luidmidev.storage.google.cloud" />
+      <option name="MAIN_CLASS_NAME" value="io.github.luidmidev.storage.google.cloud.GoogleCloudStorageTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.GoogleCloudStorageTest (1)" />
+        <item itemvalue="JUnit.GoogleCloudStorageTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="" />
+      <created>1730553877609</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1730553877609</updated>
+      <workItem from="1730553880803" duration="2168000" />
+      <workItem from="1730557990607" duration="606000" />
+      <workItem from="1730558776373" duration="1566000" />
+      <workItem from="1730560402281" duration="980000" />
+      <workItem from="1730561435165" duration="17283000" />
+      <workItem from="1730648348244" duration="461000" />
+      <workItem from="1736537183291" duration="557000" />
+      <workItem from="1737041223059" duration="1344000" />
+      <workItem from="1739381446807" duration="3430000" />
+      <workItem from="1740132720942" duration="501000" />
+      <workItem from="1740847029262" duration="410000" />
+      <workItem from="1744403762397" duration="1611000" />
+      <workItem from="1744405807047" duration="462000" />
+      <workItem from="1744406276196" duration="389000" />
+      <workItem from="1746471348951" duration="4600000" />
+      <workItem from="1747422257064" duration="246000" />
+      <workItem from="1747847407210" duration="720000" />
+      <workItem from="1758052239748" duration="11456000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
