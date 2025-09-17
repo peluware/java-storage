@@ -5,11 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-data-jpa/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-disk/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-google-cloud/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredProjection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/JpaStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/JpaStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +172,7 @@
       <workItem from="1747422257064" duration="246000" />
       <workItem from="1747847407210" duration="720000" />
       <workItem from="1758052239748" duration="11456000" />
-      <workItem from="1758064132888" duration="2850000" />
+      <workItem from="1758064132888" duration="3833000" />
     </task>
     <servers />
   </component>

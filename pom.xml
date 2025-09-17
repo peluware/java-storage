@@ -8,10 +8,8 @@
     <artifactId>storage</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
-    <name>Store</name>
-    <description>
-        Store is a library that provides a simple and easy way to store files in different storage services.
-    </description>
+    <name>storage</name>
+    <description>Store is a library that provides a simple and easy way to store files in different storage services.</description>
 
     <url>https://github.com/peluware/java-storage.git</url>
 
@@ -41,7 +39,7 @@
         <module>storage-core</module>
         <module>storage-disk</module>
         <module>storage-google-cloud</module>
-        <module>storage-spring-data-jpa</module>
+        <module>storage-jpa</module>
         <module>storage-spring-gridfs</module>
     </modules>
 

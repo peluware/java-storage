@@ -9,8 +9,8 @@
     <file url="file://$PROJECT_DIR$/storage-disk/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/storage-google-cloud/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/storage-google-cloud/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/storage-spring-data-jpa/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/storage-spring-data-jpa/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/storage-jpa/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/storage-jpa/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/storage-spring-gridfs/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/storage-spring-gridfs/src/main/resources" charset="UTF-8" />
   </component>
