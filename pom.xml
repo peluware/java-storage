@@ -6,10 +6,11 @@
 
     <groupId>com.peluware</groupId>
     <artifactId>storage</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>storage</name>
-    <description>Store is a library that provides a simple and easy way to store files in different storage services.</description>
+    <description>Store is a library that provides a simple and easy way to store files in different storage services.
+    </description>
 
     <url>https://github.com/peluware/java-storage.git</url>
 
@@ -41,6 +42,7 @@
         <module>storage-google-cloud</module>
         <module>storage-jpa</module>
         <module>storage-spring-gridfs</module>
+        <module>storage-s3</module>
     </modules>
 
     <properties>
@@ -64,10 +66,26 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.11.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.peluware</groupId>
+                <artifactId>storage-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.42</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -79,6 +97,12 @@
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -100,6 +124,7 @@
                 <version>3.6.3</version>
                 <configuration>
                     <additionalJOption>-Xdoclint:none</additionalJOption>
+
                 </configuration>
                 <executions>
                     <execution>

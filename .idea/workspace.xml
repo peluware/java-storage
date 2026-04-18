@@ -5,18 +5,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.edit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-google-cloud/src/test/resources/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/package-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/PathFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageAssertions.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageAssertions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageBatchState.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageBatchState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StoreTracking.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StoreTracking.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Stored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Stored.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ToStore.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/AlreadyFileExistsStorageException.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/AlreadyFileExistsStorageException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/FileNotFoundStorageException.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/StorageNotFoundException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-disk/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-google-cloud/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredProjection.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredProjection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-data-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/JpaStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/JpaStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStored.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/FileStoredProjection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/springframework/data/jpa/JpaStorage.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +53,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="package-info" />
       </list>
     </option>
   </component>
@@ -55,6 +82,10 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -66,31 +97,47 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Docker.resources: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.DiskStorageTest.executor&quot;: &quot;Coverage&quot;,
     &quot;JUnit.GoogleCloudStorageTest (1).executor&quot;: &quot;Run&quot;,
     &quot;JUnit.GoogleCloudStorageTest.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.storage [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.storage [deploy].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.storage [package].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/PeluWare/java/artifacts/storage/storage-google-cloud/src/test/resources/firebase&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/PeluWare/java/artifacts/storage/storage-core/src/main/java/com/peluware/storage/exceptions&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\PeluWare\java\artifacts\storage\storage-google-cloud\src\test\resources\firebase" />
-      <recent name="C:\dev\artifacts\maven\storage\storage-google-cloud\src\main\resources\firebase" />
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-core\src\main\java\com\peluware\storage\exceptions" />
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-spring-gridfs\src\main\java\com\peluware\storage\springframework\gridfs" />
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-jpa\src\main\java\com\peluware\storage\springframework\data\jpa" />
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-google-cloud\src\main\java\com\peluware\storage\google\cloud" />
+      <recent name="C:\PeluWare\java\artifacts\storage\storage-disk\src\main\java\com\peluware\storage\disk" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\PeluWare\java\artifacts\storage\storage-google-cloud\src\test\resources" />
@@ -100,8 +147,26 @@
       <recent name="io.github.luidmidev.storage.core.exceptions" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.GoogleCloudStorageTest (1)">
-    <configuration name="GoogleCloudStorageTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Docker.resources: Compose Deployment">
+    <configuration name="DiskStorageTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="storage-disk" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.peluware.storage.disk.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="ALTERNATIVE_JRE_PATH" value="temurin-21" />
+      <option name="PACKAGE_NAME" value="com.peluware.storage.disk" />
+      <option name="MAIN_CLASS_NAME" value="com.peluware.storage.disk.DiskStorageTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GoogleCloudStorageTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="storage-google-cloud" />
       <extension name="coverage">
         <pattern>
@@ -116,33 +181,38 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GoogleCloudStorageTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="storage-google-cloud" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="io.github.luidmidev.storage.google.cloud.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="io.github.luidmidev.storage.google.cloud" />
-      <option name="MAIN_CLASS_NAME" value="io.github.luidmidev.storage.google.cloud.GoogleCloudStorageTest" />
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
     </configuration>
+    <configuration name="resources: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="storage-google-cloud/src/test/resources/docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.resources: Compose Deployment" />
+      <item itemvalue="JUnit.GoogleCloudStorageTest" />
+      <item itemvalue="JUnit.DiskStorageTest" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.GoogleCloudStorageTest (1)" />
+        <item itemvalue="Docker.resources: Compose Deployment" />
         <item itemvalue="JUnit.GoogleCloudStorageTest" />
+        <item itemvalue="JUnit.DiskStorageTest" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
       </set>
     </attachedChunks>
   </component>
@@ -172,11 +242,30 @@
       <workItem from="1747422257064" duration="246000" />
       <workItem from="1747847407210" duration="720000" />
       <workItem from="1758052239748" duration="11456000" />
-      <workItem from="1758064132888" duration="3833000" />
+      <workItem from="1758064132888" duration="3979000" />
+      <workItem from="1763402005459" duration="5612000" />
+      <workItem from="1763506900864" duration="37000" />
+      <workItem from="1763591495504" duration="153000" />
+      <workItem from="1763591927972" duration="33000" />
+      <workItem from="1763597478623" duration="89000" />
+      <workItem from="1776406881226" duration="10516000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/storage$DiskStorageTest.ic" NAME="DiskStorageTest Coverage Results" MODIFIED="1763403312697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.peluware.storage.disk.*</FILTER>
+    </SUITE>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>

@@ -1,22 +1,22 @@
 package com.peluware.storage.exceptions;
 
 
-import com.peluware.storage.PathFile;
+import com.peluware.storage.StorageObjectRef;
 import lombok.Getter;
 
 @Getter
 public class AlreadyFileExistsStorageException extends StorageException {
 
     private final String filename;
-    private final String path;
+    private final String directory;
 
-    private AlreadyFileExistsStorageException(String filename, String path) {
-        super("File already exists: " + filename + " in " + (path.isEmpty() ? "root path" : path));
+    private AlreadyFileExistsStorageException(String filename, String directory) {
+        super("File already exists: " + filename + " in " + (directory.isEmpty() ? "root path" : directory));
         this.filename = filename;
-        this.path = path;
+        this.directory = directory;
     }
 
-    public AlreadyFileExistsStorageException(PathFile pathFile) {
-        this(pathFile.getFileName(), pathFile.getPath());
+    public AlreadyFileExistsStorageException(StorageObjectRef pathFile) {
+        this(pathFile.getFileName(), pathFile.getDirectory());
     }
 }

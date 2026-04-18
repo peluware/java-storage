@@ -1,4 +1,4 @@
-package com.peluware.storage.springframework.data.jpa;
+package com.peluware.storage.jpa;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor // Constructor con todos los campos (necesario para ConstructorResult)
-@NoArgsConstructor  // Opcional
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileStoredProjection {
 
     private Long contentLength;

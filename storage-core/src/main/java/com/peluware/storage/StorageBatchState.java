@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StorageBatchState {
-    private final List<ToStore> toStores;
+    private final List<StorageObject> storageObjects;
     private final List<String> toRemove;
 
     public StorageBatchState() {
-        this.toStores = new ArrayList<>();
+        this.storageObjects = new ArrayList<>();
         this.toRemove = new ArrayList<>();
     }
 
@@ -27,21 +27,21 @@ public final class StorageBatchState {
         return store(bytes, filename, path);
     }
 
-    public String store(byte[] content, String filename, String path) {
-        return store(new ToStore(path, filename, content));
+    public String store(byte[] content, String filename, String directory) {
+        return store(new StorageObject(directory, filename, content));
     }
 
-    public String store(ToStore toStore) {
-        toStores.add(toStore);
-        return toStore.getCompletePath();
+    public String store(StorageObject storageObject) {
+        storageObjects.add(storageObject);
+        return storageObject.getPath();
     }
 
     public void remove(String fullPath) {
         toRemove.add(fullPath);
     }
 
-    public List<ToStore> toStores() {
-        return List.copyOf(toStores);
+    public List<StorageObject> toStores() {
+        return List.copyOf(storageObjects);
     }
 
     public List<String> toRemove() {

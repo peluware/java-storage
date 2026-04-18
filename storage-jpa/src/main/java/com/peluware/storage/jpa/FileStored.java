@@ -1,10 +1,11 @@
-package com.peluware.storage.springframework.data.jpa;
+package com.peluware.storage.jpa;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,12 +32,11 @@ public class FileStored {
     private String originalFileName;
 
     @Column(nullable = false)
-    private String path;
+    private String directory;
 
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
 
     @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] content;
+    private byte @Nullable [] content;
 }

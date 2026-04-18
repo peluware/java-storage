@@ -2,14 +2,18 @@ package com.peluware.storage.google.cloud;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
-import com.peluware.storage.PathFile;
+import com.peluware.storage.StorageObjectRef;
+import com.peluware.storage.StorageRequest;
 import com.peluware.storage.Storage;
 import com.peluware.storage.Stored;
-import com.peluware.storage.ToStore;
-import com.peluware.storage.exceptions.FileNotFoundStorageException;
+import com.peluware.storage.StorageObject;
+import com.peluware.storage.exceptions.StorageNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.time.Duration;
@@ -25,82 +29,91 @@ public class GoogleCloudStorage extends Storage {
     private final Bucket bucket;
 
     @Override
-    protected void internalStore(final ToStore toStore) {
-        var contentType = guessContentType(toStore.getFileName());
-        var blob = bucket.create(toStore.getCompletePath(), toStore.getStream(), contentType);
+    protected void internalStore(final StorageObject storageObject) {
+        var contentType = guessContentType(storageObject.getFileName());
+        var blob = bucket.create(storageObject.getPath(), storageObject.getContent(), contentType);
         log.debug("Stored blob: {}", blob.getName());
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final PathFile pathFile) {
+    protected Optional<Stored> internalDownload(final StorageRequest request) throws IOException {
+        var blob = getBlob(request.getPath());
+        if (blob == null || !blob.exists()) return Optional.empty();
 
-        var filename = pathFile.getFileName();
-        var path = pathFile.getPath();
+        var filename = request.getFileName();
+        var contentType = blob.getContentType() != null ? blob.getContentType() : guessContentType(filename);
+        var range = request.getRange();
 
-        var blob = getBlob(pathFile.getCompletePath());
-
-        if (blob == null || !blob.exists()) {
-            return Optional.empty();
-        }
         var reader = blob.reader();
-        var inputStream = Channels.newInputStream(reader);
+        final long contentLength;
+        long blobSize = blob.getSize();
 
-        return Optional.ofNullable(constructStoredFile(
-                inputStream,
-                blob.getSize(),
-                filename,
-                path,
-                blob.getContentType()
-        ));
-    }
+        if (range != null) {
+            long start = range.start();
 
-    @Override
-    protected Optional<Stored.Info> internalInfo(final PathFile pathFile) {
+            if (start >= blobSize) {
+                return Optional.empty();
+            }
 
+            long end = range.isOpenEnd()
+                ? blobSize - 1
+                : Math.min(range.end(), blobSize - 1);
 
-        var blob = getBlob(pathFile.getCompletePath());
-        if (blob == null || !blob.exists()) {
-            return Optional.empty();
+            if (end < start) {
+                return Optional.empty();
+            }
+
+            reader.seek(start);
+
+            long limit = end - start + 1;
+            reader.limit(limit);
+            contentLength = limit;
+
+        } else {
+            contentLength = blobSize;
         }
 
-        var filename = pathFile.getFileName();
-        var path = pathFile.getPath();
+        final InputStream stream = Channels.newInputStream(reader);
 
-        return Optional.ofNullable(constructFileInfo(
-                filename,
-                blob.getSize(),
-                path,
-                blob.getContentType()
+        return Optional.of(constructStoredFile(
+            stream,
+            contentLength,
+            filename,
+            request.getDirectory(),
+            contentType
         ));
     }
 
     @Override
-    protected boolean internalExists(final PathFile pathFile) {
-        var blob = getBlob(pathFile.getCompletePath());
+    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) {
+        var blob = getBlob(ref.getPath());
+        if (blob == null || !blob.exists()) return Optional.empty();
+
+        var contentType = blob.getContentType() != null ? blob.getContentType() : guessContentType(ref.getFileName());
+        return Optional.of(constructFileInfo(ref.getFileName(), blob.getSize(), ref.getDirectory(), contentType));
+    }
+
+    @Override
+    protected boolean internalExists(final StorageObjectRef ref) {
+        var blob = getBlob(ref.getPath());
         return blob != null && blob.exists();
     }
 
     @Override
-    protected void internalRemove(final PathFile pathFile) {
-        var blob = getBlob(pathFile.getCompletePath());
-        chekcIfBlobExistis(pathFile, blob);
+    protected void internalRemove(final StorageObjectRef ref) {
+        var blob = getBlob(ref.getPath());
+        if (blob == null) throw new StorageNotFoundException(ref);
         blob.delete();
     }
 
     @Override
-    protected URL internalGenerateSignedUrl(PathFile pathFile, Duration duration) {
-        var blob = getBlob(pathFile.getCompletePath());
-        chekcIfBlobExistis(pathFile, blob);
-        return blob.signUrl(duration.toMinutes(), TimeUnit.MINUTES);
+    protected URL internalGenerateSignedUrl(StorageRequest request, Duration duration) {
+        var blob = getBlob(request.getPath());
+        if (blob == null) throw new StorageNotFoundException(request);
+        return blob.signUrl(duration.toSeconds(), TimeUnit.SECONDS);
     }
 
-    private static void chekcIfBlobExistis(PathFile pathFile, Blob blob) {
-        if (blob == null) {
-            throw new FileNotFoundStorageException(pathFile);
-        }
-    }
-
-    private Blob getBlob(String blobName) {
+    private @Nullable Blob getBlob(String blobName) {
         return bucket.get(blobName);
     }
 }

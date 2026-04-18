@@ -13,18 +13,18 @@ public final class StorageUtils {
 
 
     /**
-     * Obtiene la ruta ideal de un path para almacenar un archivo
+     * Obtiene la ruta ideal de un directorio para almacenar un archivo
      *
-     * @param path Path a normalizar
-     * @return Path normalizado
+     * @param directory Directorio a normalizar
+     * @return Directorio normalizado
      */
-    public static String normalizePath(String path) {
-        if (path == null || path.isBlank() || path.equals("/")) return "";
-        var normalizedPath = path.startsWith("/") ? path.substring(1) : path;
-        return normalizedPath.endsWith("/") ? normalizedPath.substring(0, normalizedPath.length() - 1) : normalizedPath;
+    public static String normalizeDirectory(String directory) {
+        if (directory.isBlank() || directory.equals("/")) return "";
+        var normalizedDir = directory.startsWith("/") ? directory.substring(1) : directory;
+        return normalizedDir.endsWith("/") ? normalizedDir.substring(0, normalizedDir.length() - 1) : normalizedDir;
     }
 
-    public static String factoryPathFile(String path, String filename) {
+    public static String buildPath(String path, String filename) {
         return path.isEmpty() ? filename : path + "/" + filename;
     }
 
@@ -34,14 +34,14 @@ public final class StorageUtils {
      * @param stream Flujo del archivo
      * @param fileSize Tamaño del archivo
      * @param filename Nombre del archivo
-     * @param path Ruta del archivo
+     * @param directory Directorio del archivo
      * @param contentType Tipo de contenido
      * @return Archivo descargado
      */
-    public static Stored constructStoredFile(InputStream stream, long fileSize, String filename, String path, String contentType) {
+    public static Stored constructStoredFile(InputStream stream, long fileSize, String filename, String directory, String contentType) {
         return Stored.builder()
                 .stream(stream)
-                .info(constructFileInfo(filename, fileSize, path, contentType))
+                .info(constructFileInfo(filename, fileSize, directory, contentType))
                 .build();
     }
 
@@ -51,38 +51,38 @@ public final class StorageUtils {
      * @param stream Flujo del archivo
      * @param fileSize Tamaño del archivo
      * @param filename Nombre del archivo
-     * @param path Ruta del archivo
+     * @param directory Directorio del archivo
      * @return Archivo descargado
      */
-    public static Stored constructStoredFile(InputStream stream, long fileSize, String filename, String path) {
-        return constructStoredFile(stream, fileSize, filename, path, guessContentType(filename));
+    public static Stored constructStoredFile(InputStream stream, long fileSize, String filename, String directory) {
+        return constructStoredFile(stream, fileSize, filename, directory, guessContentType(filename));
     }
 
     /**
      * Construye la información de un archivo almacenado con el nombre, tamaño y ruta, el tipo de contenido se detecta automáticamente con el nombre del archivo
      * @param filename Nombre del archivo
      * @param fileSize Tamaño del archivo
-     * @param path Ruta del archivo
+     * @param directory Directorio del archivo
      * @return Información del archivo almacenado
      */
-    public static Stored.Info constructFileInfo(String filename, long fileSize, String path) {
-        return constructFileInfo(filename, fileSize, path, guessContentType(filename));
+    public static Stored.Info constructFileInfo(String filename, long fileSize, String directory) {
+        return constructFileInfo(filename, fileSize, directory, guessContentType(filename));
     }
 
     /**
      * Construye la información de un archivo almacenado con el nombre, tamaño, ruta y tipo de contenido
      * @param filename Nombre del archivo
      * @param fileSize Tamaño del archivo
-     * @param path Ruta del archivo
+     * @param directory Directorio del archivo
      * @param contentType Tipo de contenido
      * @return Información del archivo almacenado
      */
-    public static Stored.Info constructFileInfo(String filename, long fileSize, String path, String contentType) {
+    public static Stored.Info constructFileInfo(String filename, long fileSize, String directory, String contentType) {
 
         return Stored.Info.builder()
-                .filename(filename)
-                .filesize(fileSize)
-                .path(path)
+                .fileName(filename)
+                .fileSize(fileSize)
+                .directory(directory)
                 .contentType(contentType)
                 .build();
 

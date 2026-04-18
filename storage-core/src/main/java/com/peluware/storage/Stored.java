@@ -21,9 +21,9 @@ public class Stored {
     @Data
     @Builder
     public static class Info {
-        private String path;
-        private String filename;
+        private String directory;
+        private String fileName;
         private String contentType;
-        private Long filesize;
+        private Long fileSize;
     }
 }

@@ -1,6 +1,7 @@
 package com.peluware.storage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 @Slf4j
 public final class StoreTracking {
 
-    private final ThreadLocal<List<String>> storedThreadLocal = new ThreadLocal<>();
+    private final ThreadLocal<@Nullable List<String>> storedThreadLocal = new ThreadLocal<>();
 
     public void start() {
         storedThreadLocal.set(new ArrayList<>());

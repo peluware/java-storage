@@ -1,13 +1,16 @@
 package com.peluware.storage.disk;
 
 import com.peluware.storage.*;
-import com.peluware.storage.exceptions.AlreadyFileExistsStorageException;
-import com.peluware.storage.exceptions.FileNotFoundStorageException;
+import com.peluware.storage.exceptions.StorageNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -17,7 +20,7 @@ import static java.lang.System.getProperty;
 @Slf4j
 public class DiskStorage extends Storage {
 
-    private final String storagePath;
+    private final Path storagePath;
     private static final String USER_DIR_PROPERTY = "{user.dir}";
     private static final String DEFAULT_STORAGE_PATH = USER_DIR_PROPERTY + "/uploads";
 
@@ -26,109 +29,109 @@ public class DiskStorage extends Storage {
     }
 
     public DiskStorage(String storagePath) {
-        this.storagePath = reolveStoragePath(storagePath);
+        this.storagePath = Paths.get(resolveStoragePath(storagePath));
         log.debug("Storage path {}", this.storagePath);
         createDirIfNotExists(this.storagePath);
     }
 
-    private static String reolveStoragePath(String path) {
+    private static String resolveStoragePath(String path) {
         if (path.contains(USER_DIR_PROPERTY)) {
             return path.replace(USER_DIR_PROPERTY, getProperty("user.dir"));
         }
-
         if (path.contains("{user.home}")) {
             return path.replace("{user.home}", getProperty("user.home"));
         }
-
-        return path.endsWith("/") || path.endsWith("\\") ? path.substring(0, path.length() - 1) : path;
+        return path;
     }
 
     @Override
-    protected void internalStore(final ToStore toStore) throws IOException {
+    protected void internalStore(final StorageObject storageObject) throws IOException {
+        var dir = storageObject.getDirectory();
+        var fileName = storageObject.getFileName();
 
-        var path = toStore.getPath();
+        var fullDir = storagePath.resolve(dir);
+        createDirIfNotExists(fullDir);
 
-        createDirIfNotExists(storagePath + "/" + path);
+        var filePath = fullDir.resolve(fileName);
+        Files.createFile(filePath);
 
-        var fileName = toStore.getFileName();
-        var file = new File(storagePath + "/" + path, fileName);
-        var created = file.createNewFile();
-
-        if (!created) throw new AlreadyFileExistsStorageException(toStore);
-
-
-        try (var fos = new FileOutputStream(file)) {
-            IOUtils.copy(toStore.getStream(), fos);
+        try (var fos = Files.newOutputStream(filePath)) {
+            IOUtils.copy(storageObject.getContent(), fos);
         }
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final PathFile pathFile) {
-        return getFile(pathFile).map(file -> {
-            try {
-                var filename = pathFile.getFileName();
-                var path = pathFile.getPath();
+    protected Optional<Stored> internalDownload(final StorageRequest request) throws IOException {
+        var optionalPath = getFilePath(request);
+        if (optionalPath.isEmpty()) return Optional.empty();
 
-                return StorageUtils.constructStoredFile(
-                        new FileInputStream(file),
-                        file.length(),
-                        filename,
-                        path
-                );
-            } catch (FileNotFoundException e) {
-                log.error("Error downloading file: {}", pathFile.getCompletePath(), e);
-                return null;
-            }
-        });
-    }
+        var path = optionalPath.get();
+        var fileSize = Files.size(path);
+        var range = request.getRange();
 
+        final InputStream stream;
+        final long contentLength;
 
-    @Override
-    protected Optional<Stored.Info> internalInfo(final PathFile pathFile) {
-        return getFile(pathFile).map(file -> {
-            var filename = pathFile.getFileName();
-            var path = pathFile.getPath();
+        if (range != null) {
+            var start = range.start();
+            var end = range.isOpenEnd() ? fileSize - 1 : Math.min(range.end(), fileSize - 1);
+            contentLength = end - start + 1;
+            var raw = Files.newInputStream(path);
+            raw.skipNBytes(start);
+            stream = BoundedInputStream.builder().setInputStream(raw).setMaxCount(contentLength).get();
+        } else {
+            stream = Files.newInputStream(path);
+            contentLength = fileSize;
+        }
 
-            return constructFileInfo(filename, file.length(), path);
-        });
+        return Optional.of(StorageUtils.constructStoredFile(stream, contentLength, request.getFileName(), request.getDirectory()));
     }
 
     @Override
-    protected boolean internalExists(final PathFile pathFile) {
-        return getFile(pathFile).isPresent();
+    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) throws IOException {
+        var optionalPath = getFilePath(ref);
+        if (optionalPath.isEmpty()) return Optional.empty();
+        return Optional.of(constructFileInfo(ref.getFileName(), Files.size(optionalPath.get()), ref.getDirectory()));
     }
 
     @Override
-    protected void internalRemove(final PathFile pathFile) {
-        getFile(pathFile).ifPresentOrElse(
-                f -> {
-                    var deleted = f.delete();
-                    if (!deleted) {
-                        log.error("Error deleting file: {}", pathFile.getCompletePath());
+    protected boolean internalExists(final StorageObjectRef ref) {
+        return getFilePath(ref).isPresent();
+    }
+
+    @Override
+    protected void internalRemove(final StorageObjectRef ref) {
+        getFilePath(ref).ifPresentOrElse(
+                path -> {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException e) {
+                        log.error("Error deleting file: {}", ref.getPath(), e);
                     }
                 },
                 () -> {
-                    throw new FileNotFoundStorageException(pathFile);
+                    throw new StorageNotFoundException(ref);
                 }
         );
     }
 
     @Override
-    protected URL internalGenerateSignedUrl(PathFile pathFile, Duration duration) {
+    protected URL internalGenerateSignedUrl(StorageRequest request, Duration duration) {
         throw new UnsupportedOperationException("Signed URLs are not supported in DiskStorage");
     }
 
-    private Optional<File> getFile(PathFile pathFile) {
-        var path = pathFile.getPath();
-        var file = new File(storagePath + "/" + path, pathFile.getFileName());
-        return file.exists() ? Optional.of(file) : Optional.empty();
+    private Optional<Path> getFilePath(StorageObjectRef ref) {
+        var filePath = storagePath.resolve(ref.getDirectory()).resolve(ref.getFileName());
+        return Files.exists(filePath) ? Optional.of(filePath) : Optional.empty();
     }
 
-    private void createDirIfNotExists(String path) {
-        var dirs = new File(path);
-        if (!dirs.exists()) {
-            var created = dirs.mkdirs();
-            if (!created) throw new IllegalStateException("Path not created: " + path);
+    private void createDirIfNotExists(Path path) {
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                throw new IllegalStateException("Path not created: " + path, e);
+            }
         }
     }
 }

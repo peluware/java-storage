@@ -22,7 +22,7 @@ public final class StorageAssertions {
      */
     public static void validFilename(String filename) throws InvalidFileNameStorageException {
 
-        if (filename == null || filename.isEmpty()) {
+        if (filename.isEmpty()) {
             throw new InvalidFileNameStorageException(filename, "The filename is required.");
         }
 
@@ -52,12 +52,8 @@ public final class StorageAssertions {
      * @param path Path a validar
      * @throws StorageException Si el path es inválido
      */
-    public static void validPath(String path) throws InvalidPathStorageException {
-        if (path == null) {
-            throw new InvalidPathStorageException(null, "The path is required.");
-        }
-
-        if (path.isEmpty() || path.isBlank() || path.equals("/")) {
+    public static void validDirectory(String path) throws InvalidPathStorageException {
+        if (path.isBlank() || path.equals("/")) {
             return;
         }
 

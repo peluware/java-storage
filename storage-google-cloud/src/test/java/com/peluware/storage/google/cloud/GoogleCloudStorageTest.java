@@ -1,6 +1,7 @@
 package com.peluware.storage.google.cloud;
 
-import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.NoCredentials;
+import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.StorageOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -19,18 +20,19 @@ class GoogleCloudStorageTest {
     private static GoogleCloudStorage storage;
 
     @BeforeAll
-    static void setUp() throws IOException {
-        try (var resourceCredentials = getResource("service_account_storage.json")) {
+    static void setUp() {
+        var storage = StorageOptions.newBuilder()
+                .setProjectId("test-project")
+                // Apunta al emulador local
+                .setHost("http://localhost:4443")
+                // Desactiva credenciales (el emulador no las valida)
+                .setCredentials(NoCredentials.getInstance())
+                .build()
+                .getService();
+        storage.create(BucketInfo.of("sona_app_test"));
+        var bucket = storage.get("sona_app_test");
+        GoogleCloudStorageTest.storage = new GoogleCloudStorage(bucket);
 
-            var storage = StorageOptions.http()
-                    .setCredentials(GoogleCredentials.fromStream(resourceCredentials))
-                    .build()
-                    .getService();
-
-            var bucket = storage.get("sona_app_test");
-            GoogleCloudStorageTest.storage = new GoogleCloudStorage(bucket);
-
-        }
     }
 
     @Test
