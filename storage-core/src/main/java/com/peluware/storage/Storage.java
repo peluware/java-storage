@@ -6,7 +6,6 @@ import com.peluware.storage.exceptions.InvalidFileNameStorageException;
 import com.peluware.storage.exceptions.InvalidPathStorageException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,51 +14,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 /**
- * Clase abstracta que representa un almacen de archivos
+ * Clase abstracta que representa un almacen de objetos, archivos o binarios
  */
 @Getter
 @Slf4j
 public abstract class Storage {
-
-    private final StoreTracking tracking = new StoreTracking();
-
-    private static final ThreadLocal<@Nullable StorageBatchState> CONTEXT_BATCH_STATE = new ThreadLocal<>();
-
-    @FunctionalInterface
-    public interface StorageBatchOperation {
-        void execute(StorageBatchState state) throws IOException;
-    }
-
-    public static StorageBatchState getContextBatchState() {
-        var executionContext = CONTEXT_BATCH_STATE.get();
-        if (executionContext == null) {
-            throw new IllegalStateException("No execution context found");
-        }
-        return executionContext;
-    }
-
-    public void batchExecution(StorageBatchOperation context) throws IOException {
-        var state = new StorageBatchState();
-        CONTEXT_BATCH_STATE.set(state);
-        try {
-            context.execute(state);
-            store(state.toStores());
-            CompletableFuture.runAsync(() -> {
-                for (var fullPath : state.toRemove()) {
-                    try {
-                        remove(fullPath);
-                    } catch (IOException e) {
-                        log.error("Error removing file: {}", fullPath, e);
-                    }
-                }
-            });
-        } finally {
-            CONTEXT_BATCH_STATE.remove();
-        }
-    }
 
     /**
      * @param storageObject Objeto que contiene la información del archivo a almacenar
@@ -86,13 +47,6 @@ public abstract class Storage {
      */
     protected abstract Optional<Stored.Info> internalInfo(final StorageObjectRef ref) throws IOException;
 
-    /**
-     * Verifica si un archivo existe en el almacen.
-     *
-     * @param ref Referencia al archivo
-     * @return {@code true} si el archivo existe
-     * @throws IOException Si ocurre un error de I/O al verificar la existencia
-     */
     protected abstract boolean internalExists(final StorageObjectRef ref) throws IOException;
 
     /**
@@ -170,9 +124,7 @@ public abstract class Storage {
         log.debug("Storing file {} in dir {}", storageObject.getFileName(), storageObject.getDirectory());
         throwIfAlreadyFileExists(storageObject);
         internalStore(storageObject);
-        var path = storageObject.getPath();
-        tracking.track(path);
-        return path;
+        return storageObject.getPath();
     }
 
 
@@ -204,7 +156,6 @@ public abstract class Storage {
             }
             throw e;
         }
-        tracking.track(storeds.stream().map(StorageObjectRef::getPath).toList());
     }
 
     /**
@@ -345,7 +296,7 @@ public abstract class Storage {
 
 
     /**
-     * Genera una URL de acceso limitado para un archivo almacenado.
+     * Genera una URL de descarga de acceso limitado para un archivo almacenado.
      * <p>
      * Si {@link StorageRequest#getRange()} está presente, la URL firmada apuntará
      * únicamente al fragmento de bytes indicado (soportado nativamente en S3).
@@ -355,43 +306,87 @@ public abstract class Storage {
      * @param duration Duración por la cual la URL será válida
      * @return Una URL de acceso limitado al archivo
      */
-    protected abstract URL internalGenerateSignedUrl(StorageRequest request, Duration duration);
+    protected abstract URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration);
 
     /**
-     * Genera una URL de acceso limitado para un archivo almacenado a partir de su ruta completa.
+     * Genera una URL de carga de acceso limitado para un archivo almacenado.
+     *
+     * @param ref      Referencia al archivo destino de la carga
+     * @param duration Duración por la cual la URL será válida
+     * @return Una URL de carga de acceso limitado
+     */
+    protected abstract URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration);
+
+    /**
+     * Genera una URL de descarga de acceso limitado para un archivo almacenado a partir de su ruta completa.
      *
      * @param fullPath Ruta completa del archivo en el storage
      * @param duration Duración por la cual la URL será válida
      * @return Una URL de acceso limitado al archivo
      */
-    public URL generateSignedUrl(String fullPath, Duration duration) {
+    public URL generateDownloadSignedUrl(String fullPath, Duration duration) {
         var split = SplitPath.from(fullPath);
-        return internalGenerateSignedUrl(new StorageRequest(split.path(), split.filename()), duration);
+        return internalGenerateDownloadSignedUrl(new StorageRequest(split.path(), split.filename()), duration);
     }
 
     /**
-     * Genera una URL de acceso limitado que apunta únicamente al fragmento indicado por {@code range}.
+     * Genera una URL de descarga de acceso limitado que apunta únicamente al fragmento indicado por {@code range}.
      *
      * @param fullPath Ruta completa del archivo en el storage
      * @param duration Duración por la cual la URL será válida
      * @param range    Rango de bytes que devolverá la URL firmada
      * @return Una URL de acceso limitado al fragmento del archivo
      */
-    public URL generateSignedUrl(String fullPath, Duration duration, ByteRange range) {
+    public URL generateDownloadSignedUrl(String fullPath, Duration duration, ByteRange range) {
         var split = SplitPath.from(fullPath);
-        return internalGenerateSignedUrl(new StorageRequest(split.path(), split.filename(), range), duration);
+        return internalGenerateDownloadSignedUrl(new StorageRequest(split.path(), split.filename(), range), duration);
     }
 
     /**
-     * Genera una URL de acceso limitado a partir de un {@link StorageRequest}, permitiendo
+     * Genera una URL de descarga de acceso limitado a partir de un {@link StorageRequest}, permitiendo
      * especificar ruta, nombre y rango de bytes en un único objeto.
      *
      * @param request  Referencia al archivo con rango opcional
      * @param duration Duración por la cual la URL será válida
      * @return Una URL de acceso limitado al archivo (o fragmento)
      */
-    public URL generateSignedUrl(StorageRequest request, Duration duration) {
-        return internalGenerateSignedUrl(request, duration);
+    public URL generateDownloadSignedUrl(StorageRequest request, Duration duration) {
+        return internalGenerateDownloadSignedUrl(request, duration);
+    }
+
+    /**
+     * Genera una URL de carga de acceso limitado a partir de la ruta completa del archivo destino.
+     *
+     * @param fullPath Ruta completa del archivo destino en el storage
+     * @param duration Duración por la cual la URL será válida
+     * @return Una URL de carga de acceso limitado
+     */
+    public URL generateUploadSignedUrl(String fullPath, Duration duration) {
+        var split = SplitPath.from(fullPath);
+        return internalGenerateUploadSignedUrl(new StorageObjectRef(split.path(), split.filename()), duration);
+    }
+
+    /**
+     * Genera una URL de carga de acceso limitado a partir del nombre y directorio del archivo destino.
+     *
+     * @param filename  Nombre del archivo destino
+     * @param directory Directorio donde se almacenará el archivo
+     * @param duration  Duración por la cual la URL será válida
+     * @return Una URL de carga de acceso limitado
+     */
+    public URL generateUploadSignedUrl(String filename, String directory, Duration duration) {
+        return internalGenerateUploadSignedUrl(new StorageObjectRef(directory, filename), duration);
+    }
+
+    /**
+     * Genera una URL de carga de acceso limitado a partir de un {@link StorageObjectRef}.
+     *
+     * @param ref      Referencia al archivo destino de la carga
+     * @param duration Duración por la cual la URL será válida
+     * @return Una URL de carga de acceso limitado
+     */
+    public URL generateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+        return internalGenerateUploadSignedUrl(ref, duration);
     }
 
 

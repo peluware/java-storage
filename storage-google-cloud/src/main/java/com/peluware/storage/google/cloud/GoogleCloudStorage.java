@@ -1,12 +1,14 @@
 package com.peluware.storage.google.cloud;
 
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.HttpMethod;
+import com.peluware.storage.StorageObject;
 import com.peluware.storage.StorageObjectRef;
 import com.peluware.storage.StorageRequest;
 import com.peluware.storage.Storage;
 import com.peluware.storage.Stored;
-import com.peluware.storage.StorageObject;
 import com.peluware.storage.exceptions.StorageNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,10 +109,21 @@ public class GoogleCloudStorage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateSignedUrl(StorageRequest request, Duration duration) {
+    protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         var blob = getBlob(request.getPath());
         if (blob == null) throw new StorageNotFoundException(request);
         return blob.signUrl(duration.toSeconds(), TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+        var blobInfo = BlobInfo.newBuilder(bucket.getName(), ref.getPath()).build();
+        com.google.cloud.storage.Storage gcsStorage = bucket.getStorage();
+        return gcsStorage.signUrl(
+            blobInfo,
+            duration.toSeconds(), TimeUnit.SECONDS,
+            com.google.cloud.storage.Storage.SignUrlOption.httpMethod(HttpMethod.PUT)
+        );
     }
 
     private @Nullable Blob getBlob(String blobName) {

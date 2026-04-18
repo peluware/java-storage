@@ -120,7 +120,7 @@ public class S3Storage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateSignedUrl(StorageRequest request, Duration duration) {
+    protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         if (presigner == null) {
             throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
         }
@@ -132,6 +132,18 @@ public class S3Storage extends Storage {
                         builder.range(request.getRange().toHttpHeader());
                     }
                 })
+        );
+        return presigned.url();
+    }
+
+    @Override
+    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+        if (presigner == null) {
+            throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
+        }
+        var presigned = presigner.presignPutObject(r -> r
+                .signatureDuration(duration)
+                .putObjectRequest(req -> req.bucket(bucketName).key(ref.getPath()))
         );
         return presigned.url();
     }

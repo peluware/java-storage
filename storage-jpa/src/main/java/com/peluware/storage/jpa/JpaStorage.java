@@ -129,7 +129,12 @@ public final class JpaStorage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateSignedUrl(StorageRequest request, Duration duration) {
+    protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         throw new UnsupportedOperationException("Signed URLs are not supported in JpaStorage");
+    }
+
+    @Override
+    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+        throw new UnsupportedOperationException("Upload signed URLs are not supported in JpaStorage");
     }
 }
