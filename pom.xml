@@ -6,7 +6,7 @@
 
     <groupId>com.peluware</groupId>
     <artifactId>storage</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>pom</packaging>
     <name>storage</name>
     <description>Store is a library that provides a simple and easy way to store files in different storage services.
@@ -76,7 +76,7 @@
             <dependency>
                 <groupId>com.peluware</groupId>
                 <artifactId>storage-core</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
