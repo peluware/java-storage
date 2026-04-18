@@ -1,6 +1,7 @@
 package com.peluware.storage.jpa;
 
 import com.peluware.storage.StorageObjectRef;
+import com.peluware.storage.StorageUploadRef;
 import com.peluware.storage.StorageRequest;
 import com.peluware.storage.Stored;
 import com.peluware.storage.Storage;
@@ -134,7 +135,7 @@ public final class JpaStorage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+    protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         throw new UnsupportedOperationException("Upload signed URLs are not supported in JpaStorage");
     }
 }

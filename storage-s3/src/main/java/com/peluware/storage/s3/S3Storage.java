@@ -1,6 +1,7 @@
 package com.peluware.storage.s3;
 
 import com.peluware.storage.StorageObjectRef;
+import com.peluware.storage.StorageUploadRef;
 import com.peluware.storage.StorageRequest;
 import com.peluware.storage.Storage;
 import com.peluware.storage.Stored;
@@ -137,13 +138,17 @@ public class S3Storage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+    protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         if (presigner == null) {
             throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
         }
         var presigned = presigner.presignPutObject(r -> r
                 .signatureDuration(duration)
-                .putObjectRequest(req -> req.bucket(bucketName).key(ref.getPath()))
+                .putObjectRequest(req -> {
+                    var builder = req.bucket(bucketName).key(ref.getPath());
+                    if (ref.getContentType() != null) builder.contentType(ref.getContentType());
+                    if (ref.getContentLength() != null) builder.contentLength(ref.getContentLength());
+                })
         );
         return presigned.url();
     }

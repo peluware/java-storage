@@ -121,7 +121,7 @@ public class DiskStorage extends Storage {
     }
 
     @Override
-    protected URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+    protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         throw new UnsupportedOperationException("Upload signed URLs are not supported in DiskStorage");
     }
 

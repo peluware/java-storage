@@ -311,11 +311,11 @@ public abstract class Storage {
     /**
      * Genera una URL de carga de acceso limitado para un archivo almacenado.
      *
-     * @param ref      Referencia al archivo destino de la carga
+     * @param ref      Referencia al archivo destino de la carga con metadatos opcionales
      * @param duration Duración por la cual la URL será válida
      * @return Una URL de carga de acceso limitado
      */
-    protected abstract URL internalGenerateUploadSignedUrl(StorageObjectRef ref, Duration duration);
+    protected abstract URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration);
 
     /**
      * Genera una URL de descarga de acceso limitado para un archivo almacenado a partir de su ruta completa.
@@ -363,7 +363,7 @@ public abstract class Storage {
      */
     public URL generateUploadSignedUrl(String fullPath, Duration duration) {
         var split = SplitPath.from(fullPath);
-        return internalGenerateUploadSignedUrl(new StorageObjectRef(split.path(), split.filename()), duration);
+        return internalGenerateUploadSignedUrl(new StorageUploadRef(split.path(), split.filename()), duration);
     }
 
     /**
@@ -375,7 +375,7 @@ public abstract class Storage {
      * @return Una URL de carga de acceso limitado
      */
     public URL generateUploadSignedUrl(String filename, String directory, Duration duration) {
-        return internalGenerateUploadSignedUrl(new StorageObjectRef(directory, filename), duration);
+        return internalGenerateUploadSignedUrl(new StorageUploadRef(directory, filename), duration);
     }
 
     /**
@@ -386,6 +386,19 @@ public abstract class Storage {
      * @return Una URL de carga de acceso limitado
      */
     public URL generateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
+        return internalGenerateUploadSignedUrl(StorageUploadRef.from(ref), duration);
+    }
+
+    /**
+     * Genera una URL de carga de acceso limitado a partir de un {@link StorageUploadRef},
+     * permitiendo especificar metadatos como {@code contentType} y {@code contentLength}
+     * que los backends compatibles incluirán en la firma.
+     *
+     * @param ref      Referencia al archivo destino con metadatos opcionales
+     * @param duration Duración por la cual la URL será válida
+     * @return Una URL de carga de acceso limitado
+     */
+    public URL generateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         return internalGenerateUploadSignedUrl(ref, duration);
     }
 
