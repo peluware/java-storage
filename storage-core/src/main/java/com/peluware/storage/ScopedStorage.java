@@ -3,6 +3,7 @@ package com.peluware.storage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -41,6 +42,14 @@ public class ScopedStorage extends Storage {
         return base + directory;
     }
 
+    private Stored unscope(Stored stored) {
+        var base = resolveBase();
+        if (base.isBlank()) return stored;
+        var dir = stored.getDirectory();
+        var relative = dir.startsWith(base) ? dir.substring(base.length()) : dir;
+        return stored.withDirectory(relative);
+    }
+
     // =========================
     // INTERNALS (delegación)
     // =========================
@@ -56,28 +65,18 @@ public class ScopedStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(StorageRequest request) throws IOException {
-        return delegate.internalDownload(
+    protected Optional<Stored> internalGet(StorageRequest request) {
+        return delegate.internalGet(
             new StorageRequest(
                 resolve(request.getDirectory()),
                 request.getFileName(),
                 request.getRange()
             )
-        );
+        ).map(this::unscope);
     }
 
     @Override
-    protected Optional<Stored.Info> internalInfo(StorageObjectRef ref) throws IOException {
-        return delegate.internalInfo(
-            new StorageObjectRef(
-                resolve(ref.getDirectory()),
-                ref.getFileName()
-            )
-        );
-    }
-
-    @Override
-    protected boolean internalExists(StorageObjectRef ref) throws IOException {
+    protected boolean internalExists(StorageObjectRef ref) {
         return delegate.internalExists(
             new StorageObjectRef(
                 resolve(ref.getDirectory()),
@@ -94,6 +93,13 @@ public class ScopedStorage extends Storage {
                 ref.getFileName()
             )
         );
+    }
+
+    @Override
+    protected List<Stored> internalList(String directory) throws IOException {
+        return delegate.internalList(resolve(directory)).stream()
+            .map(this::unscope)
+            .toList();
     }
 
     @Override

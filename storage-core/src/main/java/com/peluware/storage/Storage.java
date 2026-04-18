@@ -11,9 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Clase abstracta que representa un almacen de objetos, archivos o binarios
@@ -29,25 +27,27 @@ public abstract class Storage {
     protected abstract void internalStore(final StorageObject storageObject) throws IOException;
 
     /**
-     * Descarga un archivo almacenado. Si {@link StorageRequest#getRange()} está presente
-     * se devuelve únicamente el fragmento de bytes indicado.
+     * Retorna un {@link Stored} con la metadata del archivo y un loader diferido para su contenido.
+     * Si {@link StorageRequest#getRange()} está presente, el loader aplica el rango al abrir el stream.
      *
      * @param request Referencia al archivo con rango opcional
-     * @return Archivo descargado, o vacío si no existe
-     * @throws IOException Si ocurre un error de I/O al descargar el archivo
+     * @return Stored con metadata y carga diferida, o vacío si no existe
      */
-    protected abstract Optional<Stored> internalDownload(final StorageRequest request) throws IOException;
+    protected abstract Optional<Stored> internalGet(final StorageRequest request);
 
     /**
-     * Obtiene los metadatos de un archivo almacenado sin descargar su contenido.
+     * Verifica si un archivo existe en el almacenamiento sin recuperar su contenido.
      *
-     * @param ref Referencia al archivo
-     * @return Metadatos del archivo, o vacío si no existe
-     * @throws IOException Si ocurre un error de I/O al obtener los metadatos
+     * <p>
+     * Este método se utiliza internamente para validar la existencia de un archivo,
+     * por ejemplo antes de realizar operaciones como almacenamiento o eliminación.
+     * No debe realizar operaciones costosas como la descarga del contenido.
+     * </p>
+     *
+     * @param ref Referencia al archivo a verificar
+     * @return {@code true} si el archivo existe en el almacenamiento, {@code false} en caso contrario
      */
-    protected abstract Optional<Stored.Info> internalInfo(final StorageObjectRef ref) throws IOException;
-
-    protected abstract boolean internalExists(final StorageObjectRef ref) throws IOException;
+    protected abstract boolean internalExists(final StorageObjectRef ref);
 
     /**
      * Elimina un archivo del almacen.
@@ -56,6 +56,16 @@ public abstract class Storage {
      * @throws IOException Si ocurre un error de I/O al eliminar el archivo
      */
     protected abstract void internalRemove(final StorageObjectRef ref) throws IOException;
+
+    /**
+     * Lista los archivos en un directorio sin descargar su contenido.
+     * El contenido se descarga únicamente al invocar {@link Stored#openContent()}.
+     *
+     * @param directory Directorio a listar
+     * @return Lista de entradas con metadata y carga diferida del contenido
+     * @throws IOException Si ocurre un error de I/O al listar los archivos
+     */
+    protected abstract List<Stored> internalList(String directory) throws IOException;
 
 
     /**
@@ -138,9 +148,9 @@ public abstract class Storage {
     public void store(StorageObject... storageObjects) throws IOException {
         var storeds = new ArrayList<StorageObject>();
         try {
-            for (var toStore : storageObjects) {
-                throwIfAlreadyFileExists(toStore);
-            }
+            Arrays
+                .stream(storageObjects)
+                .forEach(this::throwIfAlreadyFileExists);
             for (var toStore : storageObjects) {
                 internalStore(toStore);
                 storeds.add(toStore);
@@ -170,105 +180,44 @@ public abstract class Storage {
     }
 
 
-    private void throwIfAlreadyFileExists(StorageObjectRef ref) throws IOException, AlreadyFileExistsStorageException {
+    private void throwIfAlreadyFileExists(StorageObjectRef ref) {
         if (internalExists(ref)) {
             throw new AlreadyFileExistsStorageException(ref);
         }
     }
 
-    /**
-     * Descarga un archivo almacenado a partir de su ruta completa
-     *
-     * @param path Ruta completa del archivo
-     * @return Objeto que representa el archivo almacenado
-     * @throws IOException Si ocurre un error de lectura o escritura al descargar el archivo
-     */
-    public Optional<Stored> download(String path) throws IOException {
+    public Optional<Stored> get(String path) {
         var split = SplitPath.from(path);
-        return internalDownload(new StorageRequest(split.path(), split.filename()));
+        return internalGet(new StorageRequest(split.path(), split.filename()));
     }
 
-    /**
-     * Descarga un fragmento del archivo indicado por {@code range}.
-     *
-     * @param path  Ruta completa del archivo
-     * @param range Rango de bytes a descargar
-     * @return Fragmento del archivo descargado, o vacío si no existe
-     * @throws IOException Si ocurre un error de I/O al descargar el archivo
-     */
-    public Optional<Stored> download(String path, ByteRange range) throws IOException {
+    public Optional<Stored> get(String path, ByteRange range) {
         var split = SplitPath.from(path);
-        return internalDownload(new StorageRequest(split.path(), split.filename(), range));
+        return internalGet(new StorageRequest(split.path(), split.filename(), range));
     }
 
-    /**
-     * @param filename  Nombre del archivo
-     * @param directory Directorio donde se encuentra el archivo
-     * @return Archivo descargado, o vacío si no existe
-     * @throws IOException Si ocurre un error de I/O al descargar el archivo
-     */
-    public Optional<Stored> download(String filename, String directory) throws IOException {
-        return internalDownload(new StorageRequest(directory, filename));
+    public Optional<Stored> get(String filename, String directory) {
+        return internalGet(new StorageRequest(directory, filename));
     }
 
-    /**
-     * Descarga un fragmento del archivo indicado por {@code range}.
-     *
-     * @param filename  Nombre del archivo
-     * @param directory Directorio donde se encuentra el archivo
-     * @param range     Rango de bytes a descargar
-     * @return Fragmento del archivo descargado, o vacío si no existe
-     * @throws IOException Si ocurre un error de I/O al descargar el archivo
-     */
-    public Optional<Stored> download(String filename, String directory, ByteRange range) throws IOException {
-        return internalDownload(new StorageRequest(directory, filename, range));
+    public Optional<Stored> get(String filename, String directory, ByteRange range) {
+        return internalGet(new StorageRequest(directory, filename, range));
     }
 
-    /**
-     * Obtiene la información de un archivo almacenado a partir de su ruta completa
-     *
-     * @param path Ruta completa del archivo
-     * @return Objeto que representa la información del archivo almacenado
-     * @throws IOException Si ocurre un error de lectura o escritura al obtener la información del archivo
-     */
-    public Optional<Stored.Info> info(String path) throws IOException {
-        var split = SplitPath.from(path);
-        return info(split.filename(), split.path());
+    public Optional<Stored> info(String path) {
+        return get(path);
     }
 
-    /**
-     * Obtiene la información de un archivo almacenado a partir de su nombre y ruta
-     *
-     * @param filename  Nombre del archivo
-     * @param directory Directorio donde se encuentra el archivo
-     * @return Objeto que representa la información del archivo almacenado
-     * @throws IOException Si ocurre un error de lectura o escritura al obtener la información del archivo
-     */
-    public Optional<Stored.Info> info(String filename, String directory) throws IOException {
-        return internalInfo(new StorageRequest(directory, filename));
+    public Optional<Stored> info(String filename, String directory) {
+        return get(filename, directory);
     }
 
-    /**
-     * Verifica si un archivo almacenado existe a partir de su ruta completa
-     *
-     * @param fullPath Ruta completa del archivo
-     * @return Si el archivo existe o no
-     * @throws IOException Si ocurre un error de lectura o escritura al verificar la existencia del archivo
-     */
-    public boolean exists(String fullPath) throws IOException {
+    public boolean exists(String fullPath) {
         var split = SplitPath.from(fullPath);
         return exists(split.filename(), split.path());
     }
 
-    /**
-     * Verifica si un archivo almacenado existe a partir de su nombre y ruta
-     *
-     * @param filename Nombre del archivo
-     * @param path     Ruta donde se encuentra el archivo
-     * @return Si el archivo existe o no
-     * @throws IOException Si ocurre un error de lectura o escritura al verificar la existencia del archivo
-     */
-    public boolean exists(String filename, String path) throws IOException {
+    public boolean exists(String filename, String path) {
         return internalExists(new StorageRequest(path, filename));
     }
 
@@ -292,6 +241,29 @@ public abstract class Storage {
      */
     public void remove(String filename, String path) throws IOException {
         internalRemove(new StorageRequest(path, filename));
+    }
+
+
+    /**
+     * Lista los archivos en un directorio sin descargar su contenido.
+     *
+     * @param directory Directorio a listar
+     * @return Lista de entradas con metadata y carga diferida del contenido
+     * @throws IOException Si ocurre un error de I/O al listar los archivos
+     */
+    public List<Stored> list(String directory) throws IOException {
+        StorageAssertions.validDirectory(directory);
+        return internalList(StorageUtils.normalizeDirectory(directory));
+    }
+
+    /**
+     * Lista los archivos en el directorio raíz sin descargar su contenido.
+     *
+     * @return Lista de entradas con metadata y carga diferida del contenido
+     * @throws IOException Si ocurre un error de I/O al listar los archivos
+     */
+    public List<Stored> list() throws IOException {
+        return internalList("");
     }
 
 
@@ -440,11 +412,11 @@ public abstract class Storage {
      */
     public void transferTo(Storage target, String filename, String path) throws IOException {
         var pathFile = new StorageRequest(path, filename);
-        var downloadedFile = internalDownload(pathFile);
-        if (downloadedFile.isEmpty()) {
+        var file = internalGet(pathFile);
+        if (file.isEmpty()) {
             throw new StorageNotFoundException(pathFile);
         }
-        target.store(downloadedFile.get().getStream(), filename, path);
+        target.store(file.get().openContent(), filename, path);
     }
 
     /**

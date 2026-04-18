@@ -4,6 +4,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.HttpMethod;
+import com.google.cloud.storage.Storage.BlobListOption;
 import com.peluware.storage.StorageObject;
 import com.peluware.storage.StorageObjectRef;
 import com.peluware.storage.StorageUploadRef;
@@ -15,13 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.StreamSupport;
 
 import static com.peluware.storage.StorageUtils.*;
 
@@ -39,61 +40,40 @@ public class GoogleCloudStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final StorageRequest request) throws IOException {
+    protected Optional<Stored> internalGet(final StorageRequest request) {
         var blob = getBlob(request.getPath());
         if (blob == null || !blob.exists()) return Optional.empty();
 
         var filename = request.getFileName();
         var contentType = blob.getContentType() != null ? blob.getContentType() : guessContentType(filename);
         var range = request.getRange();
+        var blobSize = blob.getSize();
 
-        var reader = blob.reader();
         final long contentLength;
-        long blobSize = blob.getSize();
-
         if (range != null) {
-            long start = range.start();
-
-            if (start >= blobSize) {
-                return Optional.empty();
-            }
-
-            long end = range.isOpenEnd()
-                ? blobSize - 1
-                : Math.min(range.end(), blobSize - 1);
-
-            if (end < start) {
-                return Optional.empty();
-            }
-
-            reader.seek(start);
-
-            long limit = end - start + 1;
-            reader.limit(limit);
-            contentLength = limit;
-
+            var start = range.start();
+            if (start >= blobSize) return Optional.empty();
+            var end = range.isOpenEnd() ? blobSize - 1 : Math.min(range.end(), blobSize - 1);
+            if (end < start) return Optional.empty();
+            contentLength = end - start + 1;
         } else {
             contentLength = blobSize;
         }
 
-        final InputStream stream = Channels.newInputStream(reader);
-
         return Optional.of(constructStoredFile(
-            stream,
+            () -> {
+                var reader = blob.reader();
+                if (range != null) {
+                    reader.seek(range.start());
+                    reader.limit(contentLength);
+                }
+                return Channels.newInputStream(reader);
+            },
             contentLength,
             filename,
             request.getDirectory(),
             contentType
         ));
-    }
-
-    @Override
-    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) {
-        var blob = getBlob(ref.getPath());
-        if (blob == null || !blob.exists()) return Optional.empty();
-
-        var contentType = blob.getContentType() != null ? blob.getContentType() : guessContentType(ref.getFileName());
-        return Optional.of(constructFileInfo(ref.getFileName(), blob.getSize(), ref.getDirectory(), contentType));
     }
 
     @Override
@@ -107,6 +87,29 @@ public class GoogleCloudStorage extends Storage {
         var blob = getBlob(ref.getPath());
         if (blob == null) throw new StorageNotFoundException(ref);
         blob.delete();
+    }
+
+    @Override
+    protected List<Stored> internalList(String directory) {
+        var prefix = directory.isBlank() ? "" : (directory.endsWith("/") ? directory : directory + "/");
+        var blobs = bucket.list(BlobListOption.prefix(prefix), BlobListOption.currentDirectory());
+        return StreamSupport.stream(blobs.iterateAll().spliterator(), false)
+            .filter(blob -> !blob.isDirectory())
+            .map(blob -> {
+                var filename = blob.getName().substring(prefix.length());
+                var contentType = blob.getContentType() != null
+                    ? blob.getContentType()
+                    : guessContentType(filename);
+
+                return constructStoredFile(
+                    () -> Channels.newInputStream(blob.reader()),
+                    blob.getSize(),
+                    filename,
+                    directory,
+                    contentType
+                );
+            })
+            .toList();
     }
 
     @Override

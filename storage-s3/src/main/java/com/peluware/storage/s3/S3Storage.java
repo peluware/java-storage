@@ -12,12 +12,14 @@ import org.jspecify.annotations.Nullable;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 import static com.peluware.storage.StorageUtils.*;
@@ -56,46 +58,27 @@ public class S3Storage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(StorageRequest request) {
+    protected Optional<Stored> internalGet(StorageRequest request) {
         try {
             var builder = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(request.getPath());
+                .bucket(bucketName)
+                .key(request.getPath());
 
-            if (request.getRange() != null) {
-                builder.range(request.getRange().toHttpHeader());
-            }
+            var range = request.getRange();
+            if (range != null) builder.range(range.toHttpHeader());
 
             var response = client.getObject(builder.build());
             var meta = response.response();
+
             var contentType = meta.contentType() != null
                 ? meta.contentType()
                 : guessContentType(request.getFileName());
 
             return Optional.of(constructStoredFile(
-                response,
+                () -> response,
                 meta.contentLength(),
                 request.getFileName(),
                 request.getDirectory(),
-                contentType
-            ));
-        } catch (NoSuchKeyException e) {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    protected Optional<Stored.Info> internalInfo(StorageObjectRef ref) {
-        try {
-            var response = client.headObject(r -> r.bucket(bucketName).key(ref.getPath()));
-            var contentType = response.contentType() != null
-                ? response.contentType()
-                : guessContentType(ref.getFileName());
-
-            return Optional.of(constructFileInfo(
-                ref.getFileName(),
-                response.contentLength(),
-                ref.getDirectory(),
                 contentType
             ));
         } catch (NoSuchKeyException e) {
@@ -121,18 +104,41 @@ public class S3Storage extends Storage {
     }
 
     @Override
+    protected List<Stored> internalList(String directory) {
+        var prefix = directory.isBlank() ? "" : (directory.endsWith("/") ? directory : directory + "/");
+        var request = ListObjectsV2Request.builder()
+            .bucket(bucketName)
+            .prefix(prefix)
+            .delimiter("/")
+            .build();
+        return client.listObjectsV2(request).contents().stream()
+            .filter(obj -> !obj.key().equals(prefix))
+            .map(obj -> {
+                var key = obj.key();
+                var filename = key.substring(prefix.length());
+                return constructStoredFile(
+                    () -> client.getObject(r -> r.bucket(bucketName).key(key)),
+                    obj.size(),
+                    filename,
+                    directory
+                );
+            })
+            .toList();
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         if (presigner == null) {
             throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
         }
         var presigned = presigner.presignGetObject(r -> r
-                .signatureDuration(duration)
-                .getObjectRequest(req -> {
-                    var builder = req.bucket(bucketName).key(request.getPath());
-                    if (request.getRange() != null) {
-                        builder.range(request.getRange().toHttpHeader());
-                    }
-                })
+            .signatureDuration(duration)
+            .getObjectRequest(req -> {
+                var builder = req.bucket(bucketName).key(request.getPath());
+                if (request.getRange() != null) {
+                    builder.range(request.getRange().toHttpHeader());
+                }
+            })
         );
         return presigned.url();
     }
@@ -143,12 +149,12 @@ public class S3Storage extends Storage {
             throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
         }
         var presigned = presigner.presignPutObject(r -> r
-                .signatureDuration(duration)
-                .putObjectRequest(req -> {
-                    var builder = req.bucket(bucketName).key(ref.getPath());
-                    if (ref.getContentType() != null) builder.contentType(ref.getContentType());
-                    if (ref.getContentLength() != null) builder.contentLength(ref.getContentLength());
-                })
+            .signatureDuration(duration)
+            .putObjectRequest(req -> {
+                var builder = req.bucket(bucketName).key(ref.getPath());
+                if (ref.getContentType() != null) builder.contentType(ref.getContentType());
+                if (ref.getContentLength() != null) builder.contentLength(ref.getContentLength());
+            })
         );
         return presigned.url();
     }

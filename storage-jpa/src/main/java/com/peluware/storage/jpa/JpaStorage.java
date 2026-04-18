@@ -17,6 +17,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.peluware.storage.StorageUtils.*;
@@ -46,7 +47,7 @@ public final class JpaStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final StorageRequest request) {
+    protected Optional<Stored> internalGet(final StorageRequest request) {
         var query = entityManager.createQuery(
             "SELECT f FROM FileStored f WHERE f.originalFileName = :filename AND f.directory = :directory",
             FileStored.class
@@ -68,43 +69,13 @@ public final class JpaStorage extends Storage {
             }
 
             return constructStoredFile(
-                new ByteArrayInputStream(content),
+                () -> new ByteArrayInputStream(content),
                 content.length,
                 dbFile.getOriginalFileName(),
                 dbFile.getDirectory(),
                 dbFile.getContentType()
             );
         });
-    }
-
-    @Override
-    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) {
-        var cb = entityManager.getCriteriaBuilder();
-        var cq = cb.createQuery(FileStoredProjection.class);
-        var root = cq.from(FileStored.class);
-
-        cq.select(cb.construct(
-            FileStoredProjection.class,
-            root.get("contentLength"),
-            root.get("contentType"),
-            root.get("originalFileName"),
-            root.get("directory")
-        )).where(
-            cb.and(
-                cb.equal(root.get("originalFileName"), ref.getFileName()),
-                cb.equal(root.get("directory"), ref.getDirectory())
-            )
-        );
-
-        return entityManager.createQuery(cq)
-            .getResultStream()
-            .findFirst()
-            .map(info -> constructFileInfo(
-                info.getOriginalFileName(),
-                info.getContentLength(),
-                info.getPath(),
-                info.getContentType()
-            ));
     }
 
     @Override
@@ -127,6 +98,37 @@ public final class JpaStorage extends Storage {
         query.setParameter("directory", ref.getDirectory());
         int deleted = query.executeUpdate();
         if (deleted == 0) throw new StorageNotFoundException(ref);
+    }
+
+    @Override
+    protected List<Stored> internalList(String directory) {
+        var cb = entityManager.getCriteriaBuilder();
+        var cq = cb.createQuery(FileStoredProjection.class);
+        var root = cq.from(FileStored.class);
+
+        cq.select(cb.construct(
+            FileStoredProjection.class,
+            root.get("contentLength"),
+            root.get("contentType"),
+            root.get("originalFileName"),
+            root.get("directory")
+        )).where(cb.equal(root.get("directory"), directory));
+
+        return entityManager.createQuery(cq).getResultList().stream()
+            .map(info -> constructStoredFile(
+                () -> {
+                    var raw = entityManager.createQuery("SELECT f.content FROM FileStored f WHERE f.originalFileName = :filename AND f.directory = :directory", byte[].class)
+                        .setParameter("filename", info.getOriginalFileName())
+                        .setParameter("directory", directory)
+                        .getResultStream().findFirst().orElse(new byte[0]);
+                    return new ByteArrayInputStream(raw);
+                },
+                info.getContentLength(),
+                info.getOriginalFileName(),
+                directory,
+                info.getContentType()
+            ))
+            .toList();
     }
 
     @Override

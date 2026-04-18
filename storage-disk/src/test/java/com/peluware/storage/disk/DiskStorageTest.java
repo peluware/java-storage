@@ -138,12 +138,12 @@ class DiskStorageTest {
         var path = "files";
 
         storage.store(content, filename, path);
-        var stored = storage.download(filename, path);
+        var stored = storage.get(filename, path);
 
         assertTrue(stored.isPresent());
-        assertEquals(filename, stored.get().getInfo().getFileName());
-        assertEquals(path, stored.get().getInfo().getDirectory());
-        assertNotNull(stored.get().getStream());
+        assertEquals(filename, stored.get().getFileName());
+        assertEquals(path, stored.get().getDirectory());
+        assertNotNull(stored.get().openContent());
     }
 
     @Test
@@ -151,15 +151,15 @@ class DiskStorageTest {
         var content = "Full path content".getBytes();
         var fullPath = storage.store(content, "file.txt", "downloads");
 
-        var stored = storage.download(fullPath);
+        var stored = storage.get(fullPath);
 
         assertTrue(stored.isPresent());
-        assertEquals("file.txt", stored.get().getInfo().getFileName());
+        assertEquals("file.txt", stored.get().getFileName());
     }
 
     @Test
     void testDownloadNonExistentFile() throws IOException {
-        var stored = storage.download("nonexistent.txt", "nowhere");
+        var stored = storage.get("nonexistent.txt", "nowhere");
         assertTrue(stored.isEmpty());
     }
 
@@ -175,7 +175,7 @@ class DiskStorageTest {
         assertTrue(info.isPresent());
         assertEquals(filename, info.get().getFileName());
         assertEquals(path, info.get().getDirectory());
-        assertEquals(content.length, info.get().getFileSize());
+        assertEquals((long) content.length, info.get().getFileSize());
     }
 
     @Test
@@ -186,7 +186,7 @@ class DiskStorageTest {
         var info = storage.info(fullPath);
 
         assertTrue(info.isPresent());
-        assertEquals(content.length, info.get().getFileSize());
+        assertEquals((long) content.length, info.get().getFileSize());
     }
 
     @Test

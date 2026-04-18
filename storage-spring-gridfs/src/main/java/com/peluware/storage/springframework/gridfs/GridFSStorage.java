@@ -19,10 +19,11 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.peluware.storage.StorageUtils.*;
@@ -50,7 +51,7 @@ public final class GridFSStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final StorageRequest request) throws IOException {
+    protected Optional<Stored> internalGet(final StorageRequest request) {
         var gridFSFile = getOne(request);
         if (gridFSFile == null) return Optional.empty();
 
@@ -63,42 +64,24 @@ public final class GridFSStorage extends Storage {
                 : guessContentType(request.getFileName());
 
         var range = request.getRange();
-        final InputStream stream;
-        final long contentLength;
-
-        if (range != null) {
-            // GridFS doesn't support native range seeking: buffer the range bytes in memory
-            var raw = operations.getResource(gridFSFile).getInputStream();
-            raw.skipNBytes(range.start());
-            contentLength = range.isOpenEnd() ? gridFSFile.getLength() - range.start() : range.end() - range.start() + 1;
-            stream = new ByteArrayInputStream(raw.readNBytes((int) contentLength));
-        } else {
-            stream = operations.getResource(gridFSFile).getInputStream();
-            contentLength = gridFSFile.getLength();
-        }
+        final long contentLength = range != null
+            ? (range.isOpenEnd() ? gridFSFile.getLength() - range.start() : range.end() - range.start() + 1)
+            : gridFSFile.getLength();
 
         return Optional.of(constructStoredFile(
-            stream,
+            () -> {
+                if (range != null) {
+                    var raw = operations.getResource(gridFSFile).getInputStream();
+                    raw.skipNBytes(range.start());
+                    return new ByteArrayInputStream(raw.readNBytes((int) contentLength));
+                }
+                return operations.getResource(gridFSFile).getInputStream();
+            },
             contentLength,
             request.getFileName(),
             path,
             contentType
         ));
-    }
-
-    @Override
-    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) {
-        var gridFSFile = getOne(ref);
-        if (gridFSFile == null) return Optional.empty();
-
-        var metadata = gridFSFile.getMetadata();
-        if (metadata == null) throw new StorageException("Metadata not found for file: " + ref.getPath());
-
-        var path = metadata.getString(DIR_KEY);
-        var contentType = metadata.containsKey("_contentType")
-                ? metadata.getString("_contentType")
-                : guessContentType(ref.getFileName());
-        return Optional.of(constructFileInfo(ref.getFileName(), gridFSFile.getLength(), path, contentType));
     }
 
     @Override
@@ -110,6 +93,26 @@ public final class GridFSStorage extends Storage {
     protected void internalRemove(final StorageObjectRef ref) {
         if (getOne(ref) == null) throw new StorageNotFoundException(ref);
         template.delete(createQuery(ref));
+    }
+
+    @Override
+    protected List<Stored> internalList(String directory) {
+        var query = new Query(Criteria.where("metadata." + DIR_KEY).is(directory));
+        var entries = new ArrayList<Stored>();
+        template.find(query).forEach(file -> {
+            var metadata = file.getMetadata();
+            var contentType = metadata != null && metadata.containsKey("_contentType")
+                ? metadata.getString("_contentType")
+                : guessContentType(file.getFilename());
+            entries.add(constructStoredFile(
+                () -> operations.getResource(file).getInputStream(),
+                file.getLength(),
+                file.getFilename(),
+                directory,
+                contentType
+            ));
+        });
+        return entries;
     }
 
     @Override

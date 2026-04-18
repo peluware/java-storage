@@ -6,9 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Stored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Stored.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" afterDir="false" />
@@ -21,8 +26,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="package-info" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -219,7 +224,10 @@
       <workItem from="1763597478623" duration="89000" />
       <workItem from="1776406881226" duration="10641000" />
       <workItem from="1776479768706" duration="1946000" />
-      <workItem from="1776489283887" duration="432000" />
+      <workItem from="1776489283887" duration="1136000" />
+      <workItem from="1776491606659" duration="1146000" />
+      <workItem from="1776495914292" duration="3600000" />
+      <workItem from="1776525667254" duration="770000" />
     </task>
     <servers />
   </component>

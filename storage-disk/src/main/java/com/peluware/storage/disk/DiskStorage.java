@@ -7,14 +7,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 import java.io.*;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.constructFileInfo;
+import static com.peluware.storage.StorageUtils.constructStoredFile;
 import static java.lang.System.getProperty;
 
 @Slf4j
@@ -61,37 +64,47 @@ public class DiskStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalDownload(final StorageRequest request) throws IOException {
+    protected Optional<Stored> internalGet(final StorageRequest request) {
         var optionalPath = getFilePath(request);
         if (optionalPath.isEmpty()) return Optional.empty();
 
         var path = optionalPath.get();
-        var fileSize = Files.size(path);
+        var fileSize = uncheckedSize(path);
         var range = request.getRange();
 
-        final InputStream stream;
         final long contentLength;
-
         if (range != null) {
-            var start = range.start();
             var end = range.isOpenEnd() ? fileSize - 1 : Math.min(range.end(), fileSize - 1);
-            contentLength = end - start + 1;
-            var raw = Files.newInputStream(path);
-            raw.skipNBytes(start);
-            stream = BoundedInputStream.builder().setInputStream(raw).setMaxCount(contentLength).get();
+            contentLength = end - range.start() + 1;
         } else {
-            stream = Files.newInputStream(path);
             contentLength = fileSize;
         }
 
-        return Optional.of(StorageUtils.constructStoredFile(stream, contentLength, request.getFileName(), request.getDirectory()));
+        StorageContentLoader loader = () -> {
+            var raw = Files.newInputStream(path);
+            if (range != null) {
+                raw.skipNBytes(range.start());
+                return BoundedInputStream.builder()
+                    .setInputStream(raw)
+                    .setMaxCount(contentLength)
+                    .get();
+            }
+            return raw;
+        };
+
+        return Optional.of(constructStoredFile(
+            loader,
+            contentLength,
+            request.getFileName(),
+            request.getDirectory()));
     }
 
-    @Override
-    protected Optional<Stored.Info> internalInfo(final StorageObjectRef ref) throws IOException {
-        var optionalPath = getFilePath(ref);
-        if (optionalPath.isEmpty()) return Optional.empty();
-        return Optional.of(constructFileInfo(ref.getFileName(), Files.size(optionalPath.get()), ref.getDirectory()));
+    private static long uncheckedSize(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
@@ -102,17 +115,39 @@ public class DiskStorage extends Storage {
     @Override
     protected void internalRemove(final StorageObjectRef ref) {
         getFilePath(ref).ifPresentOrElse(
-                path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        log.error("Error deleting file: {}", ref.getPath(), e);
-                    }
-                },
-                () -> {
-                    throw new StorageNotFoundException(ref);
+            path -> {
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    log.error("Error deleting file: {}", ref.getPath(), e);
                 }
+            },
+            () -> {
+                throw new StorageNotFoundException(ref);
+            }
         );
+    }
+
+    @Override
+    protected List<Stored> internalList(String directory) throws IOException {
+        var dir = storagePath.resolve(directory);
+        if (!Files.exists(dir) || !Files.isDirectory(dir)) return List.of();
+        var entries = new ArrayList<Stored>();
+        try (var stream = Files.list(dir)) {
+            for (var file : (Iterable<Path>) stream::iterator) {
+
+                if (!Files.isRegularFile(file)) continue;
+                var filename = file.getFileName().toString();
+
+                entries.add(constructStoredFile(
+                    () -> Files.newInputStream(file),
+                    Files.size(file),
+                    filename,
+                    directory
+                ));
+            }
+        }
+        return List.copyOf(entries);
     }
 
     @Override
@@ -126,8 +161,13 @@ public class DiskStorage extends Storage {
     }
 
     private Optional<Path> getFilePath(StorageObjectRef ref) {
-        var filePath = storagePath.resolve(ref.getDirectory()).resolve(ref.getFileName());
-        return Files.exists(filePath) ? Optional.of(filePath) : Optional.empty();
+        var filePath = storagePath
+            .resolve(ref.getDirectory())
+            .resolve(ref.getFileName());
+
+        return Files.exists(filePath)
+            ? Optional.of(filePath)
+            : Optional.empty();
     }
 
     private void createDirIfNotExists(Path path) {

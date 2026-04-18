@@ -75,18 +75,18 @@ class GoogleCloudStorageTest {
         try (var resource = getResource(fileName)) {
 
             var fullpath = storage.store(resource, fileName);
-            var downloaded = storage.download(fullpath);
+            var downloaded = storage.get(fullpath);
 
             assertTrue(downloaded.isPresent());
 
-            var fileInfo = downloaded.get().getInfo();
-            log.info("Downloaded file with info {}", fileInfo);
+            var stored = downloaded.get();
+            log.info("Downloaded file with info {}", stored);
 
             try (var fos = new FileOutputStream("downloaded-" + fileName)) {
-                IOUtils.copy(downloaded.get().getStream(), fos);
+                IOUtils.copy(stored.openContent(), fos);
             }
 
-            assertNotNull(fileInfo);
+            assertNotNull(stored);
         } catch (IOException e) {
             fail(e);
         }
