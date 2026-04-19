@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/DelegatingStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/DelegatingStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObjectRef.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObjectRef.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/test/java/com/peluware/storage/google/cloud/GoogleCloudStorageTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" afterDir="false" />
-    </list>
+    <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -230,7 +217,7 @@
       <workItem from="1776525667254" duration="2073000" />
       <workItem from="1776560008389" duration="2104000" />
       <workItem from="1776618472067" duration="4722000" />
-      <workItem from="1776623761077" duration="1743000" />
+      <workItem from="1776623761077" duration="2096000" />
     </task>
     <servers />
   </component>
