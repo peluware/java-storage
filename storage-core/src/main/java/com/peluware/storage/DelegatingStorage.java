@@ -46,6 +46,11 @@ public abstract class DelegatingStorage extends Storage {
         return getDelegate().internalGenerateUploadSignedUrl(ref, duration);
     }
 
+    @Override
+    public void close() throws Exception {
+        getDelegate().close();
+    }
+
     public static DelegatingStorage of(Supplier<Storage> supplier) {
         return new DelegatingStorage() {
             @Override
@@ -53,5 +58,9 @@ public abstract class DelegatingStorage extends Storage {
                 return supplier.get();
             }
         };
+    }
+
+    public static DelegatingStorage of(Storage storage) {
+        return of(() -> storage);
     }
 }

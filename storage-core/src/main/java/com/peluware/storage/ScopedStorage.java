@@ -126,4 +126,9 @@ public class ScopedStorage extends Storage {
             duration
         );
     }
+
+    @Override
+    public void close() throws Exception {
+        delegate.close();
+    }
 }

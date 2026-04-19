@@ -5,6 +5,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage.BlobListOption;
+import com.google.cloud.storage.Storage.SignUrlOption;
 import com.peluware.storage.StorageObject;
 import com.peluware.storage.StorageObjectRef;
 import com.peluware.storage.StorageUploadRef;
@@ -123,12 +124,17 @@ public class GoogleCloudStorage extends Storage {
     protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         var blobBuilder = BlobInfo.newBuilder(bucket.getName(), ref.getPath());
         if (ref.getContentType() != null) blobBuilder.setContentType(ref.getContentType());
-        com.google.cloud.storage.Storage gcsStorage = bucket.getStorage();
+        var gcsStorage = bucket.getStorage();
         return gcsStorage.signUrl(
             blobBuilder.build(),
             duration.toSeconds(), TimeUnit.SECONDS,
-            com.google.cloud.storage.Storage.SignUrlOption.httpMethod(HttpMethod.PUT)
+            SignUrlOption.httpMethod(HttpMethod.PUT)
         );
+    }
+
+    @Override
+    public void close() throws Exception {
+        bucket.getStorage().close();
     }
 
     private @Nullable Blob getBlob(String blobName) {

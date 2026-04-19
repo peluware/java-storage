@@ -158,4 +158,10 @@ public class S3Storage extends Storage {
         );
         return presigned.url();
     }
+
+    @Override
+    public void close() {
+        client.close();
+        if (presigner != null) presigner.close();
+    }
 }

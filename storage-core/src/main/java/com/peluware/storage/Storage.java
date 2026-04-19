@@ -18,7 +18,11 @@ import java.util.*;
  */
 @Getter
 @Slf4j
-public abstract class Storage {
+public abstract class Storage implements AutoCloseable {
+
+    @Override
+    public void close() throws Exception {
+    }
 
     /**
      * @param storageObject Objeto que contiene la información del archivo a almacenar
