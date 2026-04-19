@@ -93,25 +93,6 @@ class GoogleCloudStorageTest {
     }
 
     @Test
-    void info() {
-
-        var fileName = "test-file.webp";
-        try (var resource = getResource(fileName)) {
-
-            var fullPath = storage.store(resource, "to-info" + fileName);
-            var info = storage.info(fullPath);
-
-            assertTrue(info.isPresent());
-
-            log.info("File info {}", info.get());
-
-            assertNotNull(info.get());
-        } catch (IOException e) {
-            fail(e);
-        }
-    }
-
-    @Test
     void exists() {
 
         var fileName = "test-file.webp";

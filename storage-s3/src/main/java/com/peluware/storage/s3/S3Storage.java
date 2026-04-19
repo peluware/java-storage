@@ -59,6 +59,7 @@ public class S3Storage extends Storage {
 
         log.debug("Stored S3 object: {} ({} bytes)", key, contentLength);
     }
+
     @Override
     protected Optional<StoredObject> internalGet(StorageRequest request) {
         try {
@@ -131,6 +132,18 @@ public class S3Storage extends Storage {
 
     @Override
     protected void internalMove(StorageObjectRef source, StorageObjectRef target) {
+        internalCopy(source, target);
+        try {
+            internalRemove(source);
+        } catch (S3Exception e) {
+            log.warn("Move copy succeeded but could not delete source: {}", source.getPath(), e);
+        }
+        log.debug("Moved S3 object: {} -> {}", source.getPath(), target.getPath());
+    }
+
+
+    @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) {
         var sourcePath = source.getPath();
         var targetPath = target.getPath();
         try {
@@ -146,9 +159,7 @@ public class S3Storage extends Storage {
             }
             throw e;
         }
-
-        client.deleteObject(r -> r.bucket(bucketName).key(sourcePath));
-        log.debug("Moved S3 object: {} -> {}", sourcePath, targetPath);
+        log.debug("Copied S3 object: {} -> {}", sourcePath, targetPath);
     }
 
     @Override
@@ -180,6 +191,19 @@ public class S3Storage extends Storage {
                 if (ref.getContentType() != null) builder.contentType(ref.getContentType());
                 if (ref.getContentLength() != null) builder.contentLength(ref.getContentLength());
             })
+        );
+        return presigned.url();
+    }
+
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        if (presigner == null) {
+            throw new UnsupportedOperationException("S3Presigner not configured. Use the constructor that accepts an S3Presigner.");
+        }
+        var presigned = presigner.presignDeleteObject(r -> r
+            .signatureDuration(duration)
+            .deleteObjectRequest(req -> req.bucket(bucketName).key(ref.getPath()))
         );
         return presigned.url();
     }

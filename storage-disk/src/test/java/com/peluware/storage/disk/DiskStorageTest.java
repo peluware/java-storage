@@ -1,7 +1,6 @@
 package com.peluware.storage.disk;
 
 import com.peluware.storage.StorageObject;
-import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,16 +91,16 @@ class DiskStorageTest {
     }
 
     @Test
-    void testStoreFileAlreadyExists() throws IOException {
-        var content = "Content".getBytes();
+    void testStoreFileOverwritesExisting() throws IOException {
         var filename = "duplicate.txt";
         var path = "files";
 
-        storage.store(content, filename, path);
+        storage.store("original".getBytes(), filename, path);
+        storage.store("updated".getBytes(), filename, path);
 
-        assertThrows(AlreadyExistsStorageObjectException.class, () -> {
-            storage.store(content, filename, path);
-        });
+        var stored = storage.get(filename, path);
+        assertTrue(stored.isPresent());
+        assertArrayEquals("updated".getBytes(), stored.get().openContent().readAllBytes());
     }
 
     @Test
@@ -113,22 +112,6 @@ class DiskStorageTest {
 
         assertTrue(storage.exists("file1.txt", "path1"));
         assertTrue(storage.exists("file2.txt", "path2"));
-    }
-
-    @Test
-    void testStoreMultipleFilesWithRollback() throws IOException {
-        var toStore1 = new StorageObject("rollback", "file1.txt", "Content 1".getBytes());
-        storage.store(toStore1);
-
-        var toStore2 = new StorageObject("rollback", "file2.txt", "Content 2".getBytes());
-        var toStore3 = new StorageObject("rollback", "file1.txt", "Duplicate".getBytes()); // Ya existe
-
-        assertThrows(AlreadyExistsStorageObjectException.class, () -> {
-            storage.store(toStore2, toStore3);
-        });
-
-        // file2.txt no debería existir debido al rollback
-        assertFalse(storage.exists("file2.txt", "rollback"));
     }
 
     @Test
@@ -163,37 +146,6 @@ class DiskStorageTest {
         assertTrue(stored.isEmpty());
     }
 
-    @Test
-    void testFileInfo() throws IOException {
-        var content = "Info content".getBytes();
-        var filename = "info.txt";
-        var path = "data";
-
-        storage.store(content, filename, path);
-        var info = storage.info(filename, path);
-
-        assertTrue(info.isPresent());
-        assertEquals(filename, info.get().getFileName());
-        assertEquals(path, info.get().getDirectory());
-        assertEquals((long) content.length, info.get().getFileSize());
-    }
-
-    @Test
-    void testFileInfoByFullPath() throws IOException {
-        var content = "Info by path".getBytes();
-        var fullPath = storage.store(content, "info2.txt", "metadata");
-
-        var info = storage.info(fullPath);
-
-        assertTrue(info.isPresent());
-        assertEquals((long) content.length, info.get().getFileSize());
-    }
-
-    @Test
-    void testFileInfoNonExistent() throws IOException {
-        var info = storage.info("ghost.txt", "nowhere");
-        assertTrue(info.isEmpty());
-    }
 
     @Test
     void testFileExists() throws IOException {

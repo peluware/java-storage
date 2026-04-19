@@ -133,6 +133,13 @@ public final class GridFSStorage extends Storage {
     }
 
     @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        var stored = internalGet(new StorageRequest(source.getDirectory(), source.getFileName()));
+        if (stored.isEmpty()) throw new StorageObjectNotFoundException(source);
+        internalStore(new StorageObject(target.getDirectory(), target.getFileName(), stored.get().openContent()));
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         throw new UnsupportedOperationException("Generate signed URL is not supported in GridFSStorage.");
     }
@@ -140,6 +147,11 @@ public final class GridFSStorage extends Storage {
     @Override
     protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         throw new UnsupportedOperationException("Upload signed URLs are not supported in GridFSStorage.");
+    }
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        throw new UnsupportedOperationException("Delete signed URLs are not supported in GridFSStorage.");
     }
 
     private static Query createQuery(final StorageObjectRef ref) {

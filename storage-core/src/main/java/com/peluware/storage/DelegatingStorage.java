@@ -42,6 +42,11 @@ public abstract class DelegatingStorage extends Storage {
     }
 
     @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        getDelegate().internalCopy(source, target);
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         return getDelegate().internalGenerateDownloadSignedUrl(request, duration);
     }
@@ -49,6 +54,11 @@ public abstract class DelegatingStorage extends Storage {
     @Override
     protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         return getDelegate().internalGenerateUploadSignedUrl(ref, duration);
+    }
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        return getDelegate().internalGenerateDeleteSignedUrl(ref, duration);
     }
 
     @Override

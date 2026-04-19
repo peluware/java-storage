@@ -168,6 +168,16 @@ public class DiskStorage extends Storage {
     }
 
     @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        var srcPath = refToPath(source);
+        if (!Files.exists(srcPath)) throw new StorageObjectNotFoundException(source);
+        var tgtDir = storagePath.resolve(target.getDirectory());
+        createDirIfNotExists(tgtDir);
+        Files.copy(srcPath, tgtDir.resolve(target.getFileName()), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Copied file: {} -> {}", source.getPath(), target.getPath());
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         throw new UnsupportedOperationException("Signed URLs are not supported in DiskStorage");
     }
@@ -175,6 +185,11 @@ public class DiskStorage extends Storage {
     @Override
     protected URL internalGenerateUploadSignedUrl(StorageUploadRef ref, Duration duration) {
         throw new UnsupportedOperationException("Upload signed URLs are not supported in DiskStorage");
+    }
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        throw new UnsupportedOperationException("Delete signed URLs are not supported in DiskStorage");
     }
 
     private Path refToPath(StorageObjectRef source) {

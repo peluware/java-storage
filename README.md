@@ -24,35 +24,35 @@ Add only the module(s) you need. All of them pull `storage-core` transitively.
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-s3</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- Google Cloud Storage -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-google-cloud</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- Local disk -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-disk</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- JPA (relational DB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-jpa</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 
 <!-- MongoDB GridFS (requires Spring Data MongoDB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-spring-gridfs</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ String path = storage.store(bytes, "photo.jpg", "avatars/");
 // Store from StorageObject (explicit metadata)
 String path = storage.store(new StorageObject("avatars/", "photo.jpg", inputStream));
 
-// Atomic multi-file store — rolls back already-StoredObjectObject files on failure
+// Multi-file store
 storage.store(obj1, obj2, obj3);
 ```
 
@@ -162,6 +162,16 @@ storage.purge(userProfile);
 storage.purge(listOfProfiles);
 ```
 
+### Move & copy
+
+```java
+// Move within the same backend
+storage.move("drafts/report.pdf", "documents/report.pdf");
+
+// Copy within the same backend
+storage.copy("templates/base.docx", "projects/42/base.docx");
+```
+
 ### Signed URLs
 
 ```java
@@ -177,6 +187,9 @@ URL url = storage.generateUploadSignedUrl("uploads/photo.jpg", Duration.ofMinute
 // Upload URL with content constraints
 StorageUploadRef ref = new StorageUploadRef("uploads/", "photo.jpg", "image/jpeg", 204800L);
 URL url = storage.generateUploadSignedUrl(ref, Duration.ofMinutes(5));
+
+// Delete URL
+URL url = storage.generateDeleteSignedUrl("uploads/photo.jpg", Duration.ofMinutes(5));
 ```
 
 > Signed URLs are supported by `S3Storage` and `GoogleCloudStorage`. Other backends throw `UnsupportedOperationException`.
@@ -194,7 +207,7 @@ Storage userStorage = new ScopedStorage(storage, "users/42/");
 // Dynamic scope (resolved on each operation)
 Storage tenantStorage = new ScopedStorage(storage, () -> "tenants/" + TenantContext.get() + "/");
 
-userStorage.store(inputStream, "avatar.jpg"); // StoredObjectObject at users/42/avatar.jpg
+userStorage.store(inputStream, "avatar.jpg"); // StoredObject at users/42/avatar.jpg
 ```
 
 ### DelegatingStorage
@@ -214,7 +227,7 @@ public class AuditingStorage extends DelegatingStorage {
     @Override
     public String store(StorageObject obj) throws IOException {
         var path = super.store(obj);
-        auditLog.record("StoredObjectObject", path);
+        auditLog.record("StoredObject", path);
         return path;
     }
 }

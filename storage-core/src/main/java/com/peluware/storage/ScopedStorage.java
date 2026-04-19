@@ -113,6 +113,14 @@ public class ScopedStorage extends Storage {
     }
 
     @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        delegate.internalCopy(
+            new StorageObjectRef(resolve(source.getDirectory()), source.getFileName()),
+            new StorageObjectRef(resolve(target.getDirectory()), target.getFileName())
+        );
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         return delegate.internalGenerateDownloadSignedUrl(
             new StorageRequest(
@@ -133,6 +141,14 @@ public class ScopedStorage extends Storage {
                 ref.getContentType(),
                 ref.getContentLength()
             ),
+            duration
+        );
+    }
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        return delegate.internalGenerateDeleteSignedUrl(
+            new StorageObjectRef(resolve(ref.getDirectory()), ref.getFileName()),
             duration
         );
     }

@@ -139,6 +139,25 @@ public class GoogleCloudStorage extends Storage {
     }
 
     @Override
+    protected void internalCopy(StorageObjectRef source, StorageObjectRef target) {
+        var blob = getBlob(source.getPath());
+        if (blob == null || !blob.exists()) throw new StorageObjectNotFoundException(source);
+        blob.copyTo(bucket.getName(), target.getPath());
+        log.debug("Copied GCS blob: {} -> {}", source.getPath(), target.getPath());
+    }
+
+    @Override
+    protected URL internalGenerateDeleteSignedUrl(StorageObjectRef ref, Duration duration) {
+        var blobInfo = BlobInfo.newBuilder(bucket.getName(), ref.getPath()).build();
+        var gcsStorage = bucket.getStorage();
+        return gcsStorage.signUrl(
+            blobInfo,
+            duration.toSeconds(), TimeUnit.SECONDS,
+            SignUrlOption.httpMethod(HttpMethod.DELETE)
+        );
+    }
+
+    @Override
     public void close() throws Exception {
         bucket.getStorage().close();
     }
