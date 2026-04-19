@@ -1,7 +1,7 @@
 package com.peluware.storage.disk;
 
 import com.peluware.storage.*;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -16,6 +16,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 
 import static com.peluware.storage.StorageUtils.constructStoredFile;
 import static java.lang.System.getProperty;
@@ -64,7 +66,7 @@ public class DiskStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(final StorageRequest request) {
+    protected Optional<StoredObject> internalGet(final StorageRequest request) {
         var optionalPath = getFilePath(request);
         if (optionalPath.isEmpty()) return Optional.empty();
 
@@ -123,18 +125,19 @@ public class DiskStorage extends Storage {
                 }
             },
             () -> {
-                throw new StorageNotFoundException(ref);
+                throw new StorageObjectNotFoundException(ref);
             }
         );
     }
 
     @Override
-    protected List<Stored> internalList(String directory) throws IOException {
+    protected List<StoredObject> internalList(String directory) throws IOException {
         var dir = storagePath.resolve(directory);
         if (!Files.exists(dir) || !Files.isDirectory(dir)) return List.of();
-        var entries = new ArrayList<Stored>();
+        var entries = new ArrayList<StoredObject>();
         try (var stream = Files.list(dir)) {
-            for (var file : (Iterable<Path>) stream::iterator) {
+            Iterable<Path> it = stream::iterator;
+            for (var file : it) {
 
                 if (!Files.isRegularFile(file)) continue;
                 var filename = file.getFileName().toString();
@@ -151,6 +154,20 @@ public class DiskStorage extends Storage {
     }
 
     @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        var srcPath = refToPath(source);
+        if (!Files.exists(srcPath)) throw new StorageObjectNotFoundException(source);
+
+        var tgtDir = storagePath.resolve(target.getDirectory());
+        var tgtPath = tgtDir.resolve(target.getFileName());
+        if (Files.exists(tgtPath)) throw new AlreadyExistsStorageObjectException(target);
+
+        createDirIfNotExists(tgtDir);
+        Files.move(srcPath, tgtPath);
+        log.debug("Moved file: {} -> {}", source.getPath(), target.getPath());
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         throw new UnsupportedOperationException("Signed URLs are not supported in DiskStorage");
     }
@@ -160,10 +177,14 @@ public class DiskStorage extends Storage {
         throw new UnsupportedOperationException("Upload signed URLs are not supported in DiskStorage");
     }
 
+    private Path refToPath(StorageObjectRef source) {
+        return storagePath
+            .resolve(source.getDirectory())
+            .resolve(source.getFileName());
+    }
+
     private Optional<Path> getFilePath(StorageObjectRef ref) {
-        var filePath = storagePath
-            .resolve(ref.getDirectory())
-            .resolve(ref.getFileName());
+        var filePath = refToPath(ref);
 
         return Files.exists(filePath)
             ? Optional.of(filePath)

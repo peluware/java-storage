@@ -19,11 +19,11 @@ public final class StorageUtils {
         return path.isEmpty() ? filename : path + "/" + filename;
     }
 
-    public static Stored constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory, String contentType) {
-        return new Stored(directory, filename, contentType, fileSize, loader);
+    public static StoredObject constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory, String contentType) {
+        return new StoredObject(directory, filename, contentType, fileSize, loader);
     }
 
-    public static Stored constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory) {
+    public static StoredObject constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory) {
         return constructStoredFile(
             loader,
             fileSize,
@@ -35,5 +35,13 @@ public final class StorageUtils {
 
     public static String guessContentType(String filename) {
         return TIKA.detect(filename);
+    }
+
+    public static String extractDirectory(String path) {
+        return path.contains("/") ? path.substring(0, path.lastIndexOf("/") + 1) : "/";
+    }
+
+    public static String extractFilename(String path) {
+        return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
     }
 }

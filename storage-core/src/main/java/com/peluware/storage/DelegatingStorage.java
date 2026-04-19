@@ -17,7 +17,7 @@ public abstract class DelegatingStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(StorageRequest request) {
+    protected Optional<StoredObject> internalGet(StorageRequest request) {
         return getDelegate().internalGet(request);
     }
 
@@ -32,8 +32,13 @@ public abstract class DelegatingStorage extends Storage {
     }
 
     @Override
-    protected List<Stored> internalList(String directory) throws IOException {
+    protected List<StoredObject> internalList(String directory) throws IOException {
         return getDelegate().internalList(directory);
+    }
+
+    @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        getDelegate().internalMove(source, target);
     }
 
     @Override

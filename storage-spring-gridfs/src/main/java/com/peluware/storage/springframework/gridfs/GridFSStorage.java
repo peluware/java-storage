@@ -5,15 +5,18 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import com.peluware.storage.StorageObjectRef;
 import com.peluware.storage.StorageUploadRef;
 import com.peluware.storage.StorageRequest;
-import com.peluware.storage.Stored;
+import com.peluware.storage.StoredObject;
 import com.peluware.storage.Storage;
 import com.peluware.storage.StorageObject;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import com.peluware.storage.exceptions.StorageException;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
@@ -36,7 +39,9 @@ public final class GridFSStorage extends Storage {
 
     private final GridFsTemplate template;
     private final GridFsOperations operations;
+    private final MongoTemplate mongoTemplate;
     private static final String DIR_KEY = "directory";
+    private static final String FILES_COLLECTION = "fs.files";
 
     @Override
     protected void internalStore(StorageObject storageObject) {
@@ -50,7 +55,7 @@ public final class GridFSStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(final StorageRequest request) {
+    protected Optional<StoredObject> internalGet(final StorageRequest request) {
         var gridFSFile = getOne(request);
         if (gridFSFile == null) return Optional.empty();
 
@@ -90,14 +95,14 @@ public final class GridFSStorage extends Storage {
 
     @Override
     protected void internalRemove(final StorageObjectRef ref) {
-        if (getOne(ref) == null) throw new StorageNotFoundException(ref);
+        if (getOne(ref) == null) throw new StorageObjectNotFoundException(ref);
         template.delete(createQuery(ref));
     }
 
     @Override
-    protected List<Stored> internalList(String directory) {
+    protected List<StoredObject> internalList(String directory) {
         var query = new Query(Criteria.where("metadata." + DIR_KEY).is(directory));
-        var entries = new ArrayList<Stored>();
+        var entries = new ArrayList<StoredObject>();
         template.find(query).forEach(file -> {
             var metadata = file.getMetadata();
             var contentType = metadata != null && metadata.containsKey("_contentType")
@@ -112,6 +117,19 @@ public final class GridFSStorage extends Storage {
             ));
         });
         return List.copyOf(entries);
+    }
+
+    @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) {
+        if (!internalExists(source)) throw new StorageObjectNotFoundException(source);
+        if (internalExists(target)) throw new AlreadyExistsStorageObjectException(target);
+        mongoTemplate.updateFirst(
+            createQuery(source),
+            new Update()
+                .set("filename", target.getFileName())
+                .set("metadata." + DIR_KEY, target.getDirectory()),
+            FILES_COLLECTION
+        );
     }
 
     @Override

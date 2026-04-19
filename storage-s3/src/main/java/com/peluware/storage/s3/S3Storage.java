@@ -1,22 +1,16 @@
 package com.peluware.storage.s3;
 
-import com.peluware.storage.StorageObjectRef;
-import com.peluware.storage.StorageUploadRef;
-import com.peluware.storage.StorageRequest;
-import com.peluware.storage.Storage;
-import com.peluware.storage.Stored;
-import com.peluware.storage.StorageObject;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.*;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -42,23 +36,31 @@ public class S3Storage extends Storage {
     }
 
     @Override
-    protected void internalStore(StorageObject storageObject) throws IOException {
+    protected void internalStore(StorageObject storageObject) {
         var key = storageObject.getPath();
         var contentType = guessContentType(storageObject.getFileName());
 
-        final RequestBody requestBody;
-        if (storageObject.getContentLength() != null) {
-            requestBody = RequestBody.fromInputStream(storageObject.getContent(), storageObject.getContentLength());
-        } else {
-            requestBody = RequestBody.fromBytes(storageObject.getContent().readAllBytes());
+        var contentLength = storageObject.getContentLength();
+        if (contentLength == null) {
+            throw new IllegalArgumentException("S3 storage requires contentLength for object: " + key);
         }
 
-        client.putObject(r -> r.bucket(bucketName).key(key).contentType(contentType), requestBody);
-        log.debug("Stored S3 object: {}", key);
-    }
+        var requestBody = RequestBody.fromInputStream(
+            storageObject.getContent(),
+            contentLength
+        );
 
+        client.putObject(r -> r
+                .bucket(bucketName)
+                .key(key)
+                .contentType(contentType),
+            requestBody
+        );
+
+        log.debug("Stored S3 object: {} ({} bytes)", key, contentLength);
+    }
     @Override
-    protected Optional<Stored> internalGet(StorageRequest request) {
+    protected Optional<StoredObject> internalGet(StorageRequest request) {
         try {
             var builder = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -81,8 +83,9 @@ public class S3Storage extends Storage {
                 request.getDirectory(),
                 contentType
             ));
-        } catch (NoSuchKeyException e) {
-            return Optional.empty();
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) return Optional.empty();
+            throw e;
         }
     }
 
@@ -91,20 +94,20 @@ public class S3Storage extends Storage {
         try {
             client.headObject(r -> r.bucket(bucketName).key(ref.getPath()));
             return true;
-        } catch (NoSuchKeyException e) {
-            return false;
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) return false;
+            throw e;
         }
     }
 
     @Override
     protected void internalRemove(StorageObjectRef ref) {
-        if (!internalExists(ref)) throw new StorageNotFoundException(ref);
         client.deleteObject(r -> r.bucket(bucketName).key(ref.getPath()));
         log.debug("Deleted S3 object: {}", ref.getPath());
     }
 
     @Override
-    protected List<Stored> internalList(String directory) {
+    protected List<StoredObject> internalList(String directory) {
         var prefix = directory.isBlank() ? "" : (directory.endsWith("/") ? directory : directory + "/");
         var request = ListObjectsV2Request.builder()
             .bucket(bucketName)
@@ -124,6 +127,28 @@ public class S3Storage extends Storage {
                 );
             })
             .toList();
+    }
+
+    @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) {
+        var sourcePath = source.getPath();
+        var targetPath = target.getPath();
+        try {
+            client.copyObject(r -> r
+                .sourceBucket(bucketName)
+                .sourceKey(sourcePath)
+                .destinationBucket(bucketName)
+                .destinationKey(targetPath)
+            );
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404 || "NoSuchKey".equals(e.awsErrorDetails().errorCode())) {
+                throw new StorageObjectNotFoundException(source);
+            }
+            throw e;
+        }
+
+        client.deleteObject(r -> r.bucket(bucketName).key(sourcePath));
+        log.debug("Moved S3 object: {} -> {}", sourcePath, targetPath);
     }
 
     @Override

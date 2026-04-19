@@ -24,4 +24,12 @@ public class StorageRequest extends StorageObjectRef {
         super(directory, fileName);
         this.range = range;
     }
+
+    public static StorageRequest fromPath(String path) {
+        return new StorageRequest(StorageUtils.extractDirectory(path), StorageUtils.extractFilename(path));
+    }
+
+    public static StorageRequest fromPath(String path, ByteRange range) {
+        return new StorageRequest(StorageUtils.extractDirectory(path), StorageUtils.extractFilename(path), range);
+    }
 }

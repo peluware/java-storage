@@ -1,7 +1,7 @@
 package com.peluware.storage;
 
-import com.peluware.storage.exceptions.AlreadyFileExistsStorageException;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import com.peluware.storage.exceptions.InvalidFileNameStorageException;
 import com.peluware.storage.exceptions.InvalidPathStorageException;
 import lombok.Getter;
@@ -31,13 +31,13 @@ public abstract class Storage implements AutoCloseable {
     protected abstract void internalStore(final StorageObject storageObject) throws IOException;
 
     /**
-     * Retorna un {@link Stored} con la metadata del archivo y un loader diferido para su contenido.
+     * Retorna un {@link StoredObject} con la metadata del archivo y un loader diferido para su contenido.
      * Si {@link StorageRequest#getRange()} está presente, el loader aplica el rango al abrir el stream.
      *
      * @param request Referencia al archivo con rango opcional
      * @return Stored con metadata y carga diferida, o vacío si no existe
      */
-    protected abstract Optional<Stored> internalGet(final StorageRequest request);
+    protected abstract Optional<StoredObject> internalGet(final StorageRequest request);
 
     /**
      * Verifica si un archivo existe en el almacenamiento sin recuperar su contenido.
@@ -63,13 +63,13 @@ public abstract class Storage implements AutoCloseable {
 
     /**
      * Lista los archivos en un directorio sin descargar su contenido.
-     * El contenido se descarga únicamente al invocar {@link Stored#openContent()}.
+     * El contenido se descarga únicamente al invocar {@link StoredObject#openContent()}.
      *
      * @param directory Directorio a listar
      * @return Lista de entradas con metadata y carga diferida del contenido
      * @throws IOException Si ocurre un error de I/O al listar los archivos
      */
-    protected abstract List<Stored> internalList(String directory) throws IOException;
+    protected abstract List<StoredObject> internalList(String directory) throws IOException;
 
 
     /**
@@ -147,7 +147,7 @@ public abstract class Storage implements AutoCloseable {
      *
      * @param storageObjects Objetos que contienen la información de los archivos a almacenar
      * @throws IOException              Si ocurre un error de lectura o escritura al almacenar los archivos
-     * @throws StorageNotFoundException Si no se encuentra alguno de los archivos a almacenar
+     * @throws StorageObjectNotFoundException Si no se encuentra alguno de los archivos a almacenar
      */
     public void store(StorageObject... storageObjects) throws IOException {
         var storeds = new ArrayList<StorageObject>();
@@ -177,7 +177,7 @@ public abstract class Storage implements AutoCloseable {
      *
      * @param storageObjects Objetos que contienen la información de los archivos a almacenar
      * @throws IOException              Si ocurre un error de lectura o escritura al almacenar los archivos
-     * @throws StorageNotFoundException Si no se encuentra alguno de los archivos a almacenar
+     * @throws StorageObjectNotFoundException Si no se encuentra alguno de los archivos a almacenar
      */
     public void store(Collection<StorageObject> storageObjects) throws IOException {
         this.store(storageObjects.toArray(StorageObject[]::new));
@@ -186,39 +186,37 @@ public abstract class Storage implements AutoCloseable {
 
     private void throwIfAlreadyFileExists(StorageObjectRef ref) {
         if (internalExists(ref)) {
-            throw new AlreadyFileExistsStorageException(ref);
+            throw new AlreadyExistsStorageObjectException(ref);
         }
     }
 
-    public Optional<Stored> get(String path) {
-        var split = SplitPath.from(path);
-        return internalGet(new StorageRequest(split.path(), split.filename()));
+    public Optional<StoredObject> get(String path) {
+        return internalGet(StorageRequest.fromPath(path));
     }
 
-    public Optional<Stored> get(String path, ByteRange range) {
-        var split = SplitPath.from(path);
-        return internalGet(new StorageRequest(split.path(), split.filename(), range));
+    public Optional<StoredObject> get(String path, ByteRange range) {
+        return internalGet(StorageRequest.fromPath(path, range));
     }
 
-    public Optional<Stored> get(String filename, String directory) {
+    public Optional<StoredObject> get(String filename, String directory) {
         return internalGet(new StorageRequest(directory, filename));
     }
 
-    public Optional<Stored> get(String filename, String directory, ByteRange range) {
+    public Optional<StoredObject> get(String filename, String directory, ByteRange range) {
         return internalGet(new StorageRequest(directory, filename, range));
     }
 
-    public Optional<Stored> info(String path) {
+    public Optional<StoredObject> info(String path) {
         return get(path);
     }
 
-    public Optional<Stored> info(String filename, String directory) {
+    public Optional<StoredObject> info(String filename, String directory) {
         return get(filename, directory);
     }
 
     public boolean exists(String fullPath) {
-        var split = SplitPath.from(fullPath);
-        return exists(split.filename(), split.path());
+        var request = StorageRequest.fromPath(fullPath);
+        return exists(request.getFileName(), request.getDirectory());
     }
 
     public boolean exists(String filename, String path) {
@@ -232,8 +230,8 @@ public abstract class Storage implements AutoCloseable {
      * @throws IOException Si ocurre un error de lectura o escritura al eliminar el archivo
      */
     public void remove(String fullPath) throws IOException {
-        var split = SplitPath.from(fullPath);
-        remove(split.filename(), split.path());
+        var request = StorageRequest.fromPath(fullPath);
+        remove(request.getFileName(), request.getDirectory());
     }
 
     /**
@@ -255,7 +253,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Lista de entradas con metadata y carga diferida del contenido
      * @throws IOException Si ocurre un error de I/O al listar los archivos
      */
-    public List<Stored> list(String directory) throws IOException {
+    public List<StoredObject> list(String directory) throws IOException {
         StorageAssertions.validDirectory(directory);
         return internalList(StorageUtils.normalizeDirectory(directory));
     }
@@ -266,7 +264,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Lista de entradas con metadata y carga diferida del contenido
      * @throws IOException Si ocurre un error de I/O al listar los archivos
      */
-    public List<Stored> list() throws IOException {
+    public List<StoredObject> list() throws IOException {
         return internalList("");
     }
 
@@ -301,8 +299,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Una URL de acceso limitado al archivo
      */
     public URL generateDownloadSignedUrl(String fullPath, Duration duration) {
-        var split = SplitPath.from(fullPath);
-        return internalGenerateDownloadSignedUrl(new StorageRequest(split.path(), split.filename()), duration);
+        return internalGenerateDownloadSignedUrl(StorageRequest.fromPath(fullPath), duration);
     }
 
     /**
@@ -314,8 +311,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Una URL de acceso limitado al fragmento del archivo
      */
     public URL generateDownloadSignedUrl(String fullPath, Duration duration, ByteRange range) {
-        var split = SplitPath.from(fullPath);
-        return internalGenerateDownloadSignedUrl(new StorageRequest(split.path(), split.filename(), range), duration);
+        return internalGenerateDownloadSignedUrl(StorageRequest.fromPath(fullPath, range), duration);
     }
 
     /**
@@ -333,13 +329,12 @@ public abstract class Storage implements AutoCloseable {
     /**
      * Genera una URL de carga de acceso limitado a partir de la ruta completa del archivo destino.
      *
-     * @param fullPath Ruta completa del archivo destino en el storage
+     * @param path Ruta completa del archivo destino en el storage
      * @param duration Duración por la cual la URL será válida
      * @return Una URL de carga de acceso limitado
      */
-    public URL generateUploadSignedUrl(String fullPath, Duration duration) {
-        var split = SplitPath.from(fullPath);
-        return internalGenerateUploadSignedUrl(new StorageUploadRef(split.path(), split.filename()), duration);
+    public URL generateUploadSignedUrl(String path, Duration duration) {
+        return internalGenerateUploadSignedUrl(StorageUploadRef.from(StorageRequest.fromPath(path)), duration);
     }
 
     /**
@@ -385,7 +380,7 @@ public abstract class Storage implements AutoCloseable {
      *
      * @param purgable Objeto que contiene las referencias a los archivos a eliminar
      * @throws IOException              Si ocurre un error de lectura o escritura al eliminar los archivos almacenados a partir del objeto purgable
-     * @throws StorageNotFoundException Si no se encuentra el archivo a eliminar
+     * @throws StorageObjectNotFoundException Si no se encuentra el archivo a eliminar
      */
     public void purge(PurgableStored purgable) throws IOException {
         for (var fullPath : purgable.filesFullPaths()) {
@@ -398,12 +393,35 @@ public abstract class Storage implements AutoCloseable {
      *
      * @param purgables Objetos que contienen las referencias a los archivos a eliminar
      * @throws IOException              Si ocurre un error de lectura o escritura al eliminar los archivos almacenados a partir de los objetos purgables
-     * @throws StorageNotFoundException Si no se encuentra alguno de los archivos a eliminar
+     * @throws StorageObjectNotFoundException Si no se encuentra alguno de los archivos a eliminar
      */
     public void purge(Iterable<? extends PurgableStored> purgables) throws IOException {
         for (var purgable : purgables) {
             purge(purgable);
         }
+    }
+
+    /**
+     * Mueve un archivo de una ruta a otra dentro del mismo almacen usando la operación nativa del backend.
+     *
+     * @param source Referencia al archivo origen
+     * @param target Referencia al archivo destino
+     * @throws IOException              Si ocurre un error de I/O durante el movimiento
+     * @throws StorageObjectNotFoundException Si el archivo origen no existe
+     */
+    protected abstract void internalMove(StorageObjectRef source, StorageObjectRef target) throws IOException;
+
+    /**
+     * Mueve un archivo de una ruta a otra dentro del mismo almacen.
+     *
+     * @param sourcePath Ruta completa del archivo origen
+     * @param targetPath Ruta completa del archivo destino
+     * @throws IOException              Si ocurre un error de I/O durante el movimiento
+     * @throws StorageObjectNotFoundException Si el archivo origen no existe
+     */
+    public void move(String sourcePath, String targetPath) throws IOException {
+        log.debug("Moving file from {} to {}", sourcePath, targetPath);
+        internalMove(StorageRequest.fromPath(sourcePath), StorageRequest.fromPath(targetPath));
     }
 
     /**
@@ -418,7 +436,7 @@ public abstract class Storage implements AutoCloseable {
         var pathFile = new StorageRequest(path, filename);
         var file = internalGet(pathFile);
         if (file.isEmpty()) {
-            throw new StorageNotFoundException(pathFile);
+            throw new StorageObjectNotFoundException(pathFile);
         }
         target.store(file.get().openContent(), filename, path);
     }
@@ -431,42 +449,9 @@ public abstract class Storage implements AutoCloseable {
      * @throws IOException Si ocurre un error de lectura o escritura al transferir el archivo
      */
     public void transferTo(Storage target, String fullPath) throws IOException {
-        var split = SplitPath.from(fullPath);
-        transferTo(target, split.filename(), split.path());
+        var request = StorageRequest.fromPath(fullPath);
+        transferTo(target, request.getFileName(), request.getDirectory());
     }
 
-    record SplitPath(String path, String filename) {
-
-        public static SplitPath from(String path) {
-            var split = new SplitPath(extractDirectory(path), extractFilename(path));
-            log.debug("Split path: {}", split);
-            return split;
-        }
-
-        /**
-         * Extrae la ruta de un archivo a partir de su ruta completa
-         *
-         * @param path Ruta completa del archivo
-         * @return Ruta del archivo
-         */
-        private static String extractDirectory(String path) {
-            return path.contains("/") ? path.substring(0, path.lastIndexOf("/") + 1) : "/";
-        }
-
-        /**
-         * Extrae el nombre de un archivo a partir de su ruta completa
-         *
-         * @param path Ruta completa del archivo
-         * @return Nombre del archivo
-         */
-        private static String extractFilename(String path) {
-            return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
-        }
-
-        @Override
-        public String toString() {
-            return "[path= " + path + ", filename= " + filename + "]";
-        }
-    }
 }
 

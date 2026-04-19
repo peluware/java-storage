@@ -3,10 +3,11 @@ package com.peluware.storage.jpa;
 import com.peluware.storage.StorageObjectRef;
 import com.peluware.storage.StorageUploadRef;
 import com.peluware.storage.StorageRequest;
-import com.peluware.storage.Stored;
+import com.peluware.storage.StoredObject;
 import com.peluware.storage.Storage;
 import com.peluware.storage.StorageObject;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public final class JpaStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(final StorageRequest request) {
+    protected Optional<StoredObject> internalGet(final StorageRequest request) {
         var query = entityManager.createQuery(
             "SELECT f FROM FileStored f WHERE f.originalFileName = :filename AND f.directory = :directory",
             FileStored.class
@@ -97,11 +98,11 @@ public final class JpaStorage extends Storage {
         query.setParameter("filename", ref.getFileName());
         query.setParameter("directory", ref.getDirectory());
         int deleted = query.executeUpdate();
-        if (deleted == 0) throw new StorageNotFoundException(ref);
+        if (deleted == 0) throw new StorageObjectNotFoundException(ref);
     }
 
     @Override
-    protected List<Stored> internalList(String directory) {
+    protected List<StoredObject> internalList(String directory) {
         var cb = entityManager.getCriteriaBuilder();
         var cq = cb.createQuery(FileStoredProjection.class);
         var root = cq.from(FileStored.class);
@@ -129,6 +130,22 @@ public final class JpaStorage extends Storage {
                 info.getContentType()
             ))
             .toList();
+    }
+
+    @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) {
+        if (!internalExists(source)) throw new StorageObjectNotFoundException(source);
+        if (internalExists(target)) throw new AlreadyExistsStorageObjectException(target);
+        entityManager.createQuery(
+            "UPDATE FileStored f SET f.originalFileName = :targetFilename, f.directory = :targetDirectory " +
+            "WHERE f.originalFileName = :sourceFilename AND f.directory = :sourceDirectory"
+        )
+        .setParameter("targetFilename", target.getFileName())
+        .setParameter("targetDirectory", target.getDirectory())
+        .setParameter("sourceFilename", source.getFileName())
+        .setParameter("sourceDirectory", source.getDirectory())
+        .executeUpdate();
+        log.debug("Moved JPA file: {} -> {}", source.getPath(), target.getPath());
     }
 
     @Override

@@ -6,21 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/DelegatingStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/DelegatingStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/ScopedStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-disk/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-google-cloud/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Stored.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StoredObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/AlreadyFileExistsStorageException.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/AlreadyExistsStorageObjectException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/StorageNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/exceptions/StorageObjectNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/main/java/com/peluware/storage/disk/DiskStorage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/src/test/java/com/peluware/storage/disk/DiskStorageTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/src/main/java/com/peluware/storage/google/cloud/GoogleCloudStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-s3/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-s3/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/src/main/java/com/peluware/storage/jpa/JpaStorage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-s3/src/main/java/com/peluware/storage/s3/S3Storage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/java/com/peluware/storage/springframework/gridfs/GridFSStorageAutoConfiguration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-spring-gridfs/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,7 +233,8 @@
       <workItem from="1776491606659" duration="1146000" />
       <workItem from="1776495914292" duration="3600000" />
       <workItem from="1776525667254" duration="2073000" />
-      <workItem from="1776560008389" duration="1542000" />
+      <workItem from="1776560008389" duration="2104000" />
+      <workItem from="1776618472067" duration="4109000" />
     </task>
     <servers />
   </component>

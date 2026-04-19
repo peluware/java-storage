@@ -13,7 +13,7 @@ import java.io.InputStream;
  */
 @EqualsAndHashCode
 @ToString
-public class Stored {
+public class StoredObject {
 
     @Getter
     private final String directory;
@@ -31,7 +31,7 @@ public class Stored {
     @ToString.Exclude
     private final StorageContentLoader loader;
 
-    public Stored(String directory, String fileName, String contentType, long fileSize, StorageContentLoader loader) {
+    public StoredObject(String directory, String fileName, String contentType, long fileSize, StorageContentLoader loader) {
         this.directory = directory;
         this.fileName = fileName;
         this.contentType = contentType;
@@ -47,7 +47,7 @@ public class Stored {
         return loader.load();
     }
 
-    Stored withDirectory(String directory) {
-        return new Stored(directory, this.fileName, this.contentType, this.fileSize, this.loader);
+    StoredObject withDirectory(String directory) {
+        return new StoredObject(directory, this.fileName, this.contentType, this.fileSize, this.loader);
     }
 }

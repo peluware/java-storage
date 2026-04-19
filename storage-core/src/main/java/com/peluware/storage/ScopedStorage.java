@@ -42,12 +42,14 @@ public class ScopedStorage extends Storage {
         return base + directory;
     }
 
-    private Stored unscope(Stored stored) {
+    private StoredObject unscope(StoredObject storedObject) {
         var base = resolveBase();
-        if (base.isBlank()) return stored;
-        var dir = stored.getDirectory();
-        var relative = dir.startsWith(base) ? dir.substring(base.length()) : dir;
-        return stored.withDirectory(relative);
+        if (base.isBlank()) return storedObject;
+        var dir = storedObject.getDirectory();
+        var relative = dir.startsWith(base)
+            ? dir.substring(base.length())
+            : dir;
+        return storedObject.withDirectory(relative);
     }
 
     // =========================
@@ -65,7 +67,7 @@ public class ScopedStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(StorageRequest request) {
+    protected Optional<StoredObject> internalGet(StorageRequest request) {
         return delegate.internalGet(
             new StorageRequest(
                 resolve(request.getDirectory()),
@@ -96,10 +98,18 @@ public class ScopedStorage extends Storage {
     }
 
     @Override
-    protected List<Stored> internalList(String directory) throws IOException {
+    protected List<StoredObject> internalList(String directory) throws IOException {
         return delegate.internalList(resolve(directory)).stream()
             .map(this::unscope)
             .toList();
+    }
+
+    @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) throws IOException {
+        delegate.internalMove(
+            new StorageObjectRef(resolve(source.getDirectory()), source.getFileName()),
+            new StorageObjectRef(resolve(target.getDirectory()), target.getFileName())
+        );
     }
 
     @Override

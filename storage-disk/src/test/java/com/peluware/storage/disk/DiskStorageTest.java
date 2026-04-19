@@ -1,8 +1,8 @@
 package com.peluware.storage.disk;
 
 import com.peluware.storage.StorageObject;
-import com.peluware.storage.exceptions.AlreadyFileExistsStorageException;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class DiskStorageTest {
 
         storage.store(content, filename, path);
 
-        assertThrows(AlreadyFileExistsStorageException.class, () -> {
+        assertThrows(AlreadyExistsStorageObjectException.class, () -> {
             storage.store(content, filename, path);
         });
     }
@@ -123,7 +123,7 @@ class DiskStorageTest {
         var toStore2 = new StorageObject("rollback", "file2.txt", "Content 2".getBytes());
         var toStore3 = new StorageObject("rollback", "file1.txt", "Duplicate".getBytes()); // Ya existe
 
-        assertThrows(AlreadyFileExistsStorageException.class, () -> {
+        assertThrows(AlreadyExistsStorageObjectException.class, () -> {
             storage.store(toStore2, toStore3);
         });
 
@@ -242,7 +242,7 @@ class DiskStorageTest {
 
     @Test
     void testRemoveNonExistentFile() {
-        assertThrows(StorageNotFoundException.class, () -> {
+        assertThrows(StorageObjectNotFoundException.class, () -> {
             storage.remove("ghost.txt", "nowhere");
         });
     }

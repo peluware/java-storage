@@ -12,11 +12,6 @@ import java.io.InputStream;
 public class StorageObject extends StorageObjectRef {
 
     private final InputStream content;
-
-    /**
-     * Tamaño del contenido en bytes. Cuando se conoce de antemano permite a backends
-     * como S3 hacer streaming directo sin cargar todo en memoria.
-     */
     private final @Nullable Long contentLength;
 
     public StorageObject(String directory, String filename, InputStream content, @Nullable Long contentLength) {

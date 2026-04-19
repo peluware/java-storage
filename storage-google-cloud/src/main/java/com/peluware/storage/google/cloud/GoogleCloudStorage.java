@@ -6,13 +6,9 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage.BlobListOption;
 import com.google.cloud.storage.Storage.SignUrlOption;
-import com.peluware.storage.StorageObject;
-import com.peluware.storage.StorageObjectRef;
-import com.peluware.storage.StorageUploadRef;
-import com.peluware.storage.StorageRequest;
-import com.peluware.storage.Storage;
-import com.peluware.storage.Stored;
-import com.peluware.storage.exceptions.StorageNotFoundException;
+import com.peluware.storage.*;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
@@ -41,7 +37,7 @@ public class GoogleCloudStorage extends Storage {
     }
 
     @Override
-    protected Optional<Stored> internalGet(final StorageRequest request) {
+    protected Optional<StoredObject> internalGet(final StorageRequest request) {
         var blob = getBlob(request.getPath());
         if (blob == null || !blob.exists()) return Optional.empty();
 
@@ -86,12 +82,12 @@ public class GoogleCloudStorage extends Storage {
     @Override
     protected void internalRemove(final StorageObjectRef ref) {
         var blob = getBlob(ref.getPath());
-        if (blob == null) throw new StorageNotFoundException(ref);
+        if (blob == null) throw new StorageObjectNotFoundException(ref);
         blob.delete();
     }
 
     @Override
-    protected List<Stored> internalList(String directory) {
+    protected List<StoredObject> internalList(String directory) {
         var prefix = directory.isBlank() ? "" : (directory.endsWith("/") ? directory : directory + "/");
         var blobs = bucket.list(BlobListOption.prefix(prefix), BlobListOption.currentDirectory());
         return StreamSupport.stream(blobs.iterateAll().spliterator(), false)
@@ -114,9 +110,19 @@ public class GoogleCloudStorage extends Storage {
     }
 
     @Override
+    protected void internalMove(StorageObjectRef source, StorageObjectRef target) {
+        var blob = getBlob(source.getPath());
+        if (blob == null || !blob.exists()) throw new StorageObjectNotFoundException(source);
+        if (internalExists(target)) throw new AlreadyExistsStorageObjectException(target);
+        blob.copyTo(bucket.getName(), target.getPath());
+        blob.delete();
+        log.debug("Moved GCS blob: {} -> {}", source.getPath(), target.getPath());
+    }
+
+    @Override
     protected URL internalGenerateDownloadSignedUrl(StorageRequest request, Duration duration) {
         var blob = getBlob(request.getPath());
-        if (blob == null) throw new StorageNotFoundException(request);
+        if (blob == null) throw new StorageObjectNotFoundException(request);
         return blob.signUrl(duration.toSeconds(), TimeUnit.SECONDS);
     }
 

@@ -24,35 +24,35 @@ Add only the module(s) you need. All of them pull `storage-core` transitively.
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-s3</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- Google Cloud Storage -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-google-cloud</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- Local disk -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-disk</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- JPA (relational DB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-jpa</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 
 <!-- MongoDB GridFS (requires Spring Data MongoDB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-spring-gridfs</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 ```
 
@@ -90,26 +90,26 @@ String path = storage.store(bytes, "photo.jpg", "avatars/");
 // Store from StorageObject (explicit metadata)
 String path = storage.store(new StorageObject("avatars/", "photo.jpg", inputStream));
 
-// Atomic multi-file store — rolls back already-stored files on failure
+// Atomic multi-file store — rolls back already-StoredObjectObject files on failure
 storage.store(obj1, obj2, obj3);
 ```
 
 ### Get & check existence
 
 ```java
-Optional<Stored> file = storage.get("avatars/photo.jpg");
-Optional<Stored> file = storage.get("photo.jpg", "avatars/");
+Optional<StoredObject> file = storage.get("avatars/photo.jpg");
+Optional<StoredObject> file = storage.get("photo.jpg", "avatars/");
 
 boolean exists = storage.exists("avatars/photo.jpg");
 
 // Partial content (byte range)
-Optional<Stored> chunk = storage.get("video.mp4", ByteRange.of(0, 1_048_575)); // first 1 MB
+Optional<StoredObject> chunk = storage.get("video.mp4", ByteRange.of(0, 1_048_575)); // first 1 MB
 ```
 
 ### Read content
 
 ```java
-Stored file = storage.get("avatars/photo.jpg").orElseThrow();
+StoredObject file = storage.get("avatars/photo.jpg").orElseThrow();
 
 file.getFileName();      // "photo.jpg"
 file.getDirectory();     // "avatars/"
@@ -131,8 +131,8 @@ storage.remove("photo.jpg", "avatars/");
 ### List
 
 ```java
-List<Stored> files = storage.list("avatars/");
-List<Stored> all   = storage.list();
+List<StoredObject> files = storage.list("avatars/");
+List<StoredObject> all   = storage.list();
 ```
 
 ### Transfer between backends
@@ -146,10 +146,10 @@ disk.transferTo(s3, "documents/report.pdf");
 
 ### Purge
 
-Implement `PurgableStored` on your domain entities to delete their associated files in one call:
+Implement `PurgableStoredObject` on your domain entities to delete their associated files in one call:
 
 ```java
-public class UserProfile implements PurgableStored {
+public class UserProfile implements PurgableStoredObject {
     private String avatarPath;
 
     @Override
@@ -194,7 +194,7 @@ Storage userStorage = new ScopedStorage(storage, "users/42/");
 // Dynamic scope (resolved on each operation)
 Storage tenantStorage = new ScopedStorage(storage, () -> "tenants/" + TenantContext.get() + "/");
 
-userStorage.store(inputStream, "avatar.jpg"); // stored at users/42/avatar.jpg
+userStorage.store(inputStream, "avatar.jpg"); // StoredObjectObject at users/42/avatar.jpg
 ```
 
 ### DelegatingStorage
@@ -214,7 +214,7 @@ public class AuditingStorage extends DelegatingStorage {
     @Override
     public String store(StorageObject obj) throws IOException {
         var path = super.store(obj);
-        auditLog.record("stored", path);
+        auditLog.record("StoredObjectObject", path);
         return path;
     }
 }
