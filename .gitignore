@@ -39,3 +39,6 @@ build/
 
 ### Spring Boot ###
 application.properties
+
+## AI AGENTS ##
+.claude/

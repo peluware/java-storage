@@ -20,7 +20,7 @@ public class StorageObjectRef {
     @ToString.Exclude
     private final String path;
 
-    protected StorageObjectRef(String directory, String fileName) {
+    public StorageObjectRef(String directory, String fileName) {
         StorageAssertions.validFilename(fileName);
         StorageAssertions.validDirectory(directory);
         this.directory = StorageUtils.normalizeDirectory(directory);
@@ -28,4 +28,37 @@ public class StorageObjectRef {
         this.path = StorageUtils.buildPath(this.directory, this.fileName);
     }
 
+    public StorageObjectRef(StorageObjectRef ref) {
+        this.directory = ref.directory;
+        this.fileName = ref.fileName;
+        this.path = ref.path;
+    }
+
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    public static class Builder {
+        private String directory;
+        private String fileName;
+
+        public Builder(StorageObjectRef ref) {
+            this.directory = ref.directory;
+            this.fileName = ref.fileName;
+        }
+
+        public Builder directory(String directory) {
+            this.directory = directory;
+            return this;
+        }
+
+        public Builder fileName(String fileName) {
+            this.fileName = fileName;
+            return this;
+        }
+
+        public StorageObjectRef build() {
+            return new StorageObjectRef(directory, fileName);
+        }
+    }
 }

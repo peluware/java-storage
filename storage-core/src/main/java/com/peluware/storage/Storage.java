@@ -357,7 +357,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Una URL de carga de acceso limitado
      */
     public URL generateUploadSignedUrl(String path, Duration duration) {
-        return internalGenerateUploadSignedUrl(StorageUploadRef.from(StorageRequest.fromPath(path)), duration);
+        return internalGenerateUploadSignedUrl(new StorageUploadRef(StorageRequest.fromPath(path)), duration);
     }
 
     /**
@@ -380,7 +380,7 @@ public abstract class Storage implements AutoCloseable {
      * @return Una URL de carga de acceso limitado
      */
     public URL generateUploadSignedUrl(StorageObjectRef ref, Duration duration) {
-        return internalGenerateUploadSignedUrl(StorageUploadRef.from(ref), duration);
+        return internalGenerateUploadSignedUrl(new StorageUploadRef(ref), duration);
     }
 
     /**
@@ -439,8 +439,9 @@ public abstract class Storage implements AutoCloseable {
      * @throws IOException                    Si ocurre un error de lectura o escritura al eliminar los archivos almacenados a partir del objeto purgable
      * @throws StorageObjectNotFoundException Si no se encuentra el archivo a eliminar
      */
-    public void purge(PurgableStored purgable) throws IOException {
-        for (var fullPath : purgable.filesFullPaths()) {
+    public void purge(HasStoragePaths purgable) throws IOException {
+        for (var fullPath : purgable.getStoredPaths()) {
+            if (fullPath == null) continue;
             remove(fullPath);
         }
     }
@@ -452,7 +453,7 @@ public abstract class Storage implements AutoCloseable {
      * @throws IOException                    Si ocurre un error de lectura o escritura al eliminar los archivos almacenados a partir de los objetos purgables
      * @throws StorageObjectNotFoundException Si no se encuentra alguno de los archivos a eliminar
      */
-    public void purge(Iterable<? extends PurgableStored> purgables) throws IOException {
+    public void purge(Iterable<? extends HasStoragePaths> purgables) throws IOException {
         for (var purgable : purgables) {
             purge(purgable);
         }

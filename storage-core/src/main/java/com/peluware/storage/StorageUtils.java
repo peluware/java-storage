@@ -44,4 +44,9 @@ public final class StorageUtils {
     public static String extractFilename(String path) {
         return path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path;
     }
+
+    public static String extractExtension(String filename) {
+        var dot = filename.lastIndexOf('.');
+        return dot >= 0 ? filename.substring(dot) : "";
+    }
 }

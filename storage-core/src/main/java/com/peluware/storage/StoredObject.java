@@ -47,7 +47,7 @@ public class StoredObject {
         return loader.load();
     }
 
-    StoredObject withDirectory(String directory) {
+    public StoredObject withDirectory(String directory) {
         return new StoredObject(directory, this.fileName, this.contentType, this.fileSize, this.loader);
     }
 }

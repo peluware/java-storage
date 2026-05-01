@@ -29,8 +29,54 @@ public class StorageUploadRef extends StorageObjectRef {
         this(directory, fileName, null, null);
     }
 
-    public static StorageUploadRef from(StorageObjectRef ref) {
-        if (ref instanceof StorageUploadRef u) return u;
-        return new StorageUploadRef(ref.getDirectory(), ref.getFileName());
+    public StorageUploadRef(StorageObjectRef ref, @Nullable String contentType, @Nullable Long contentLength) {
+        super(ref);
+        this.contentType = contentType;
+        this.contentLength = contentLength;
+    }
+
+    public StorageUploadRef(StorageObjectRef ref) {
+        this(ref, null, null);
+    }
+
+    @Override
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    public static class Builder extends StorageObjectRef.Builder {
+
+        private @Nullable String contentType;
+        private @Nullable Long contentLength;
+
+        public Builder(StorageUploadRef ref) {
+            super(ref);
+            this.contentType = ref.contentType;
+            this.contentLength = ref.contentLength;
+        }
+
+        public Builder directory(String directory) {
+            return (Builder) super.directory(directory);
+
+        }
+
+        public Builder fileName(String fileName) {
+            return (Builder) super.fileName(fileName);
+        }
+
+        public Builder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public Builder contentLength(Long contentLength) {
+            this.contentLength = contentLength;
+            return this;
+        }
+
+        @Override
+        public StorageUploadRef build() {
+            return new StorageUploadRef(super.build(), contentType, contentLength);
+        }
     }
 }
