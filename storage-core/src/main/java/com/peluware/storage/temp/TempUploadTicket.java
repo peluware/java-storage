@@ -1,5 +1,7 @@
 package com.peluware.storage.temp;
 
+import org.jspecify.annotations.Nullable;
+
 import java.time.Instant;
 
 public interface TempUploadTicket {
@@ -19,4 +21,10 @@ public interface TempUploadTicket {
     String getTempPath();
 
     void setTempPath(String tempPath);
+
+    @Nullable String getContentType();
+
+    void setContentType(@Nullable String contentType);
+
+
 }

@@ -24,35 +24,35 @@ Add only the module(s) you need. All of them pull `storage-core` transitively.
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-s3</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- Google Cloud Storage -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-google-cloud</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- Local disk -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-disk</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- JPA (relational DB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-jpa</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 
 <!-- MongoDB GridFS (requires Spring Data MongoDB) -->
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-spring-gridfs</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 ```
 

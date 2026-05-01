@@ -5,26 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0203323b-92e9-42a1-b6fb-199f02b264df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/HasStoragePaths.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadFileNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTicket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTicketManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTicketNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTickets.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/package-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/PurgableStored.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/Storage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObjectRef.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageObjectRef.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUploadRef.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUploadRef.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StorageUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StoredObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/StoredObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadFileNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadFileNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTicket.java" beforeDir="false" afterPath="$PROJECT_DIR$/storage-core/src/main/java/com/peluware/storage/temp/TempUploadTicket.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-disk/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-disk/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-google-cloud/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-google-cloud/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/storage-jpa/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/storage-jpa/pom.xml" afterDir="false" />
@@ -251,7 +239,7 @@
       <workItem from="1777521695057" duration="539000" />
       <workItem from="1777522521843" duration="142000" />
       <workItem from="1777524329790" duration="78000" />
-      <workItem from="1777668890489" duration="7026000" />
+      <workItem from="1777668890489" duration="8927000" />
     </task>
     <servers />
   </component>

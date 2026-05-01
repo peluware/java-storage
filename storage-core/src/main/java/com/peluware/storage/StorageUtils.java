@@ -37,6 +37,10 @@ public final class StorageUtils {
         return TIKA.detect(filename);
     }
 
+    public static String detectContentType(byte[] header) {
+        return TIKA.detect(header);
+    }
+
     public static String extractDirectory(String path) {
         return path.contains("/") ? path.substring(0, path.lastIndexOf("/") + 1) : "/";
     }

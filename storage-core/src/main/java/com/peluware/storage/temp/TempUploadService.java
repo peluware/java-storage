@@ -1,5 +1,6 @@
 package com.peluware.storage.temp;
 
+import com.peluware.storage.ByteRange;
 import com.peluware.storage.Storage;
 import com.peluware.storage.StorageUploadRef;
 import com.peluware.storage.StorageUtils;
@@ -7,6 +8,7 @@ import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,13 +18,20 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TempUploadService<T extends TempUploadTicket> {
 
+    private static final int DEFAULT_CONTENT_TYPE_DETECTION_BYTES = 4096;
+
     private final String tempDir;
     private final Storage storage;
     private final TempUploadTicketManager<T> ticketManager;
+    private final int contentTypeDetectionBytes;
     private final List<TempUploadListener<T>> listeners = new ArrayList<>();
 
     public TempUploadService(Storage storage, TempUploadTicketManager<T> ticketManager) {
-        this("temp", storage, ticketManager);
+        this("temp", storage, ticketManager, DEFAULT_CONTENT_TYPE_DETECTION_BYTES);
+    }
+
+    public TempUploadService(String tempDir, Storage storage, TempUploadTicketManager<T> ticketManager) {
+        this(tempDir, storage, ticketManager, DEFAULT_CONTENT_TYPE_DETECTION_BYTES);
     }
 
     public void addListener(TempUploadListener<T> listener) {
@@ -54,6 +63,7 @@ public class TempUploadService<T extends TempUploadTicket> {
         ticketRef.setTicket(ticket);
         ticketRef.setTempPath(tempRef.getPath());
         ticketRef.setTargetPath(ref.getPath());
+        ticketRef.setContentType(ref.getContentType());
         ticketRef.setCreatedAt(Instant.now());
 
         var expiresAt = Instant.now().plus(duration);
@@ -70,6 +80,20 @@ public class TempUploadService<T extends TempUploadTicket> {
 
         var tempPath = ticketRef.getTempPath();
         var targetPath = ticketRef.getTargetPath();
+
+        var contentType = ticketRef.getContentType();
+
+        if (contentType != null) {
+            var stored = storage.get(tempPath, ByteRange.first(contentTypeDetectionBytes))
+                .orElseThrow(() -> new TempUploadFileNotFoundException(tempPath));
+
+            try (InputStream content = stored.openContent()) {
+                var detected = StorageUtils.detectContentType(content.readAllBytes());
+                if (!detected.equals(contentType)) {
+                    throw new TempUploadContentTypeMismatchException(contentType, detected);
+                }
+            }
+        }
 
         try {
             storage.copy(tempPath, targetPath);
