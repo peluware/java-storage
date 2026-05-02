@@ -59,29 +59,32 @@ public class TempUploadService<T extends TempUploadTicket> {
             .fileName(randomTempFileName() + extension)
             .build();
 
-        var ticketRef = ticketManager.newTicket();
-        ticketRef.setTicket(ticket);
-        ticketRef.setTempPath(tempRef.getPath());
-        ticketRef.setTargetPath(ref.getPath());
-        ticketRef.setContentType(ref.getContentType());
-        ticketRef.setCreatedAt(Instant.now());
-
         var expiresAt = Instant.now().plus(duration);
+
+        var uploadTicket = ticketManager.newTicket();
+        uploadTicket.setTicket(ticket);
+        uploadTicket.setTempPath(tempRef.getPath());
+        uploadTicket.setTargetPath(ref.getPath());
+        uploadTicket.setContentType(ref.getContentType());
+        uploadTicket.setCreatedAt(Instant.now());
+        uploadTicket.setExpiresAt(expiresAt);
+        ticketManager.saveTicket(uploadTicket);
+
         var uploadUrl = storage.generateUploadSignedUrl(tempRef, duration);
         var deleteUrl = storage.generateDeleteSignedUrl(tempRef, duration);
 
         var tickets = new TempUploadTickets(uploadUrl, deleteUrl, ticket, expiresAt);
-        listeners.forEach(l -> l.onTicketsGenerated(ticketRef, tickets));
+        listeners.forEach(l -> l.onTicketsGenerated(uploadTicket, tickets));
         return tickets;
     }
 
     public String confirm(String ticket) throws IOException {
-        var ticketRef = ticketManager.findByTicket(ticket);
+        var uploadTicket = ticketManager.findByTicket(ticket);
 
-        var tempPath = ticketRef.getTempPath();
-        var targetPath = ticketRef.getTargetPath();
+        var tempPath = uploadTicket.getTempPath();
+        var targetPath = uploadTicket.getTargetPath();
 
-        var contentType = ticketRef.getContentType();
+        var contentType = uploadTicket.getContentType();
 
         if (contentType != null) {
             var stored = storage.get(tempPath, ByteRange.first(contentTypeDetectionBytes))
@@ -101,8 +104,8 @@ public class TempUploadService<T extends TempUploadTicket> {
             throw new TempUploadFileNotFoundException(tempPath, e);
         }
 
-        ticketManager.deleteTicket(ticketRef);
-        listeners.forEach(l -> l.onConfirmed(ticketRef));
+        ticketManager.deleteTicket(uploadTicket);
+        listeners.forEach(l -> l.onConfirmed(uploadTicket));
         return targetPath;
     }
 }

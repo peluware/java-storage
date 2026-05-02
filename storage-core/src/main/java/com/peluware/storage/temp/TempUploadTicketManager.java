@@ -4,6 +4,8 @@ public interface TempUploadTicketManager<T extends TempUploadTicket> {
 
     T newTicket();
 
+    void saveTicket(T ticket);
+
     T findByTicket(String ticket) throws TempUploadTicketNotFoundException;
 
     void deleteTicket(T ticket);

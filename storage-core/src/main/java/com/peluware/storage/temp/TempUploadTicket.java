@@ -22,9 +22,12 @@ public interface TempUploadTicket {
 
     void setTempPath(String tempPath);
 
+    Instant getExpiresAt();
+
+    void setExpiresAt(Instant expiresAt);
+
     @Nullable String getContentType();
 
     void setContentType(@Nullable String contentType);
-
 
 }
