@@ -1,7 +1,5 @@
 package com.peluware.storage;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -9,11 +7,11 @@ import org.jspecify.annotations.Nullable;
  * eliminación y URL firmadas. Opcionalmente, incluye un {@link ByteRange} para
  * descargas parciales.
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class StorageRequest extends StorageObjectRef {
 
-    /** Rango de bytes solicitado. {@code null} significa el archivo completo. */
+    /**
+     * Rango de bytes solicitado. {@code null} significa el archivo completo.
+     */
     private final @Nullable ByteRange range;
 
     public StorageRequest(String directory, String fileName) {
@@ -31,5 +29,9 @@ public class StorageRequest extends StorageObjectRef {
 
     public static StorageRequest fromPath(String path, ByteRange range) {
         return new StorageRequest(StorageUtils.extractDirectory(path), StorageUtils.extractFilename(path), range);
+    }
+
+    public @Nullable ByteRange getRange() {
+        return this.range;
     }
 }

@@ -1,8 +1,5 @@
 package com.peluware.storage.exceptions;
 
-import lombok.Getter;
-
-@Getter
 public class InvalidFileNameStorageException extends StorageException {
 
     private final String filename;
@@ -10,5 +7,9 @@ public class InvalidFileNameStorageException extends StorageException {
     public InvalidFileNameStorageException(String filename, String reason) {
         super("Invalid filename: " + filename + " because " + reason);
         this.filename = filename;
+    }
+
+    public String getFilename() {
+        return this.filename;
     }
 }

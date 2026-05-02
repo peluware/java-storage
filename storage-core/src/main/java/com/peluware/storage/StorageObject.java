@@ -1,14 +1,10 @@
 package com.peluware.storage;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class StorageObject extends StorageObjectRef {
 
     private final InputStream content;
@@ -36,4 +32,11 @@ public class StorageObject extends StorageObjectRef {
         this("", filename, content);
     }
 
+    public InputStream getContent() {
+        return this.content;
+    }
+
+    public @Nullable Long getContentLength() {
+        return this.contentLength;
+    }
 }

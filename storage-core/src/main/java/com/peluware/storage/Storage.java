@@ -1,10 +1,10 @@
 package com.peluware.storage;
 
-import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import com.peluware.storage.exceptions.InvalidFileNameStorageException;
 import com.peluware.storage.exceptions.InvalidPathStorageException;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import com.peluware.storage.exceptions.StorageObjectNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +17,9 @@ import java.util.Optional;
 /**
  * Clase abstracta que representa un almacen de objetos, archivos o binarios
  */
-@Getter
-@Slf4j
 public abstract class Storage implements AutoCloseable {
+
+    private static final Logger log = LoggerFactory.getLogger(Storage.class);
 
     @Override
     public void close() throws Exception {

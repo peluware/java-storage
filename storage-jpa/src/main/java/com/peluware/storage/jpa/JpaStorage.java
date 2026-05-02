@@ -1,16 +1,11 @@
 package com.peluware.storage.jpa;
 
-import com.peluware.storage.StorageObjectRef;
-import com.peluware.storage.StorageUploadRef;
-import com.peluware.storage.StorageRequest;
-import com.peluware.storage.StoredObject;
-import com.peluware.storage.Storage;
-import com.peluware.storage.StorageObject;
+import com.peluware.storage.*;
 import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,13 +16,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.*;
+import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.guessContentType;
 
-@Slf4j
-@RequiredArgsConstructor
 public final class JpaStorage extends Storage {
 
+    private static final Logger log = LoggerFactory.getLogger(JpaStorage.class);
     private final EntityManager entityManager;
+
+    public JpaStorage(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     protected void internalStore(final StorageObject storageObject) throws IOException {
@@ -137,14 +136,17 @@ public final class JpaStorage extends Storage {
         if (!internalExists(source)) throw new StorageObjectNotFoundException(source);
         if (internalExists(target)) throw new AlreadyExistsStorageObjectException(target);
         entityManager.createQuery(
-            "UPDATE FileStored f SET f.originalFileName = :targetFilename, f.directory = :targetDirectory " +
-            "WHERE f.originalFileName = :sourceFilename AND f.directory = :sourceDirectory"
-        )
-        .setParameter("targetFilename", target.getFileName())
-        .setParameter("targetDirectory", target.getDirectory())
-        .setParameter("sourceFilename", source.getFileName())
-        .setParameter("sourceDirectory", source.getDirectory())
-        .executeUpdate();
+                "UPDATE FileStored f " +
+                    "SET " +
+                    "f.originalFileName = :targetFilename, " +
+                    "f.directory = :targetDirectory " +
+                    "WHERE f.originalFileName = :sourceFilename AND f.directory = :sourceDirectory"
+            )
+            .setParameter("targetFilename", target.getFileName())
+            .setParameter("targetDirectory", target.getDirectory())
+            .setParameter("sourceFilename", source.getFileName())
+            .setParameter("sourceDirectory", source.getDirectory())
+            .executeUpdate();
         log.debug("Moved JPA file: {} -> {}", source.getPath(), target.getPath());
     }
 

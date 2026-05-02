@@ -1,12 +1,14 @@
 package com.peluware.storage.disk;
 
 import com.peluware.storage.*;
+import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -17,14 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
-
 import static com.peluware.storage.StorageUtils.constructStoredFile;
 import static java.lang.System.getProperty;
 
-@Slf4j
 public class DiskStorage extends Storage {
 
+    private static final Logger log = LoggerFactory.getLogger(DiskStorage.class);
     private final Path storagePath;
     private static final String USER_DIR_PROPERTY = "{user.dir}";
     private static final String DEFAULT_STORAGE_PATH = USER_DIR_PROPERTY + "/uploads";

@@ -1,8 +1,5 @@
 package com.peluware.storage;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -11,9 +8,6 @@ import org.jspecify.annotations.Nullable;
  * que los backends compatibles (S3, GCS) incluirán en la URL prefirmada para restringir
  * el tipo y tamaño del archivo que el cliente puede subir.
  */
-@Getter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 public class StorageUploadRef extends StorageObjectRef {
 
     private final @Nullable String contentType;
@@ -42,6 +36,18 @@ public class StorageUploadRef extends StorageObjectRef {
     @Override
     public Builder toBuilder() {
         return new Builder(this);
+    }
+
+    public @Nullable String getContentType() {
+        return this.contentType;
+    }
+
+    public @Nullable Long getContentLength() {
+        return this.contentLength;
+    }
+
+    public String toString() {
+        return "StorageUploadRef(super=" + super.toString() + ", contentType=" + this.getContentType() + ", contentLength=" + this.getContentLength() + ")";
     }
 
     public static class Builder extends StorageObjectRef.Builder {

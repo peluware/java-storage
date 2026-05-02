@@ -11,7 +11,6 @@ import com.peluware.storage.StorageObject;
 import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
 import com.peluware.storage.exceptions.StorageException;
-import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,7 +34,6 @@ import static com.peluware.storage.StorageUtils.*;
 /**
  * Servicio para operaciones relacionadas con archivos.
  */
-@RequiredArgsConstructor
 public final class GridFSStorage extends Storage {
 
     private final GridFsTemplate template;
@@ -43,6 +41,12 @@ public final class GridFSStorage extends Storage {
     private final MongoTemplate mongoTemplate;
     private static final String DIR_KEY = "directory";
     private static final String FILES_COLLECTION = "fs.files";
+
+    public GridFSStorage(GridFsTemplate template, GridFsOperations operations, MongoTemplate mongoTemplate) {
+        this.template = template;
+        this.operations = operations;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     protected void internalStore(StorageObject storageObject) {

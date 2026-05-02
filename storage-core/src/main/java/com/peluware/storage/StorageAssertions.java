@@ -7,6 +7,7 @@ import com.peluware.storage.exceptions.StorageException;
 import java.util.regex.Pattern;
 
 public final class StorageAssertions {
+
     private static final Pattern INVALID_FILENAME_CHARACTERS = Pattern.compile("[\\\\/:*?\"<>|]");
     private static final int MAX_FILENAME_LENGTH = 255;
 

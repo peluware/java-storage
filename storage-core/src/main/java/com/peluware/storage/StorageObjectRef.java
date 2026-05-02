@@ -1,23 +1,14 @@
 package com.peluware.storage;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
 /**
  * Referencia a un archivo dentro de un almacen: su ruta y nombre.
  * Base común para operaciones de consulta ({@link StorageRequest}) y almacenamiento ({@link StorageObject}).
  */
-@Getter
-@EqualsAndHashCode
-@ToString
 public class StorageObjectRef {
 
     private final String directory;
     private final String fileName;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     private final String path;
 
     public StorageObjectRef(String directory, String fileName) {
@@ -36,6 +27,22 @@ public class StorageObjectRef {
 
     public Builder toBuilder() {
         return new Builder(this);
+    }
+
+    public String getDirectory() {
+        return this.directory;
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public String toString() {
+        return "StorageObjectRef(directory=" + this.getDirectory() + ", fileName=" + this.getFileName() + ")";
     }
 
     public static class Builder {

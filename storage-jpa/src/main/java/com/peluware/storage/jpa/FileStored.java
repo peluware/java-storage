@@ -1,20 +1,13 @@
 package com.peluware.storage.jpa;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Table(name = "file_stored")
 public class FileStored {
 
@@ -39,4 +32,145 @@ public class FileStored {
 
     @Lob
     private byte @Nullable [] content;
+
+    public FileStored(UUID id, Long contentLength, String contentType, String originalFileName, String directory, LocalDateTime uploadedAt, byte @Nullable [] content) {
+        this.id = id;
+        this.contentLength = contentLength;
+        this.contentType = contentType;
+        this.originalFileName = originalFileName;
+        this.directory = directory;
+        this.uploadedAt = uploadedAt;
+        this.content = content;
+    }
+
+    public FileStored() {
+    }
+
+    public static FileStoredBuilder builder() {
+        return new FileStoredBuilder();
+    }
+
+    public UUID getId() {
+        return this.id;
+    }
+
+    public Long getContentLength() {
+        return this.contentLength;
+    }
+
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    public String getOriginalFileName() {
+        return this.originalFileName;
+    }
+
+    public String getDirectory() {
+        return this.directory;
+    }
+
+    public LocalDateTime getUploadedAt() {
+        return this.uploadedAt;
+    }
+
+    public byte @Nullable [] getContent() {
+        return this.content;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
+
+    public void setDirectory(String directory) {
+        this.directory = directory;
+    }
+
+    public void setUploadedAt(LocalDateTime uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    public void setContent(byte @Nullable [] content) {
+        this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FileStored f)) return false;
+        return Objects.equals(id, f.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public String toString() {
+        return "FileStored(id=" + this.getId() + ", contentLength=" + this.getContentLength() + ", contentType=" + this.getContentType() + ", originalFileName=" + this.getOriginalFileName() + ", directory=" + this.getDirectory() + ", uploadedAt=" + this.getUploadedAt() + ", content=" + java.util.Arrays.toString(this.getContent()) + ")";
+    }
+
+    public static class FileStoredBuilder {
+        private UUID id;
+        private Long contentLength;
+        private String contentType;
+        private String originalFileName;
+        private String directory;
+        private LocalDateTime uploadedAt;
+        private byte @Nullable [] content;
+
+        FileStoredBuilder() {
+        }
+
+        public FileStoredBuilder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public FileStoredBuilder contentLength(Long contentLength) {
+            this.contentLength = contentLength;
+            return this;
+        }
+
+        public FileStoredBuilder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public FileStoredBuilder originalFileName(String originalFileName) {
+            this.originalFileName = originalFileName;
+            return this;
+        }
+
+        public FileStoredBuilder directory(String directory) {
+            this.directory = directory;
+            return this;
+        }
+
+        public FileStoredBuilder uploadedAt(LocalDateTime uploadedAt) {
+            this.uploadedAt = uploadedAt;
+            return this;
+        }
+
+        public FileStoredBuilder content(byte @Nullable [] content) {
+            this.content = content;
+            return this;
+        }
+
+        public FileStored build() {
+            return new FileStored(this.id, this.contentLength, this.contentType, this.originalFileName, this.directory, this.uploadedAt, this.content);
+        }
+    }
 }

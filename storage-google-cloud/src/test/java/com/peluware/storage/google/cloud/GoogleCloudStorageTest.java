@@ -3,10 +3,11 @@ package com.peluware.storage.google.cloud;
 import com.google.cloud.NoCredentials;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.StorageOptions;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,21 +15,21 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
 class GoogleCloudStorageTest {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleCloudStorageTest.class);
     private static GoogleCloudStorage storage;
 
     @BeforeAll
     static void setUp() {
         var storage = StorageOptions.newBuilder()
-                .setProjectId("test-project")
-                // Apunta al emulador local
-                .setHost("http://localhost:4443")
-                // Desactiva credenciales (el emulador no las valida)
-                .setCredentials(NoCredentials.getInstance())
-                .build()
-                .getService();
+            .setProjectId("test-project")
+            // Apunta al emulador local
+            .setHost("http://localhost:4443")
+            // Desactiva credenciales (el emulador no las valida)
+            .setCredentials(NoCredentials.getInstance())
+            .build()
+            .getService();
         storage.create(BucketInfo.of("sona_app_test"));
         var bucket = storage.get("sona_app_test");
         GoogleCloudStorageTest.storage = new GoogleCloudStorage(bucket);

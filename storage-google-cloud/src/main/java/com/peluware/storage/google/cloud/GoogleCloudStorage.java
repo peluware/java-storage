@@ -9,9 +9,9 @@ import com.google.cloud.storage.Storage.SignUrlOption;
 import com.peluware.storage.*;
 import com.peluware.storage.exceptions.AlreadyExistsStorageObjectException;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -21,13 +21,17 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
-import static com.peluware.storage.StorageUtils.*;
+import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.guessContentType;
 
-@Slf4j
-@RequiredArgsConstructor
 public class GoogleCloudStorage extends Storage {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleCloudStorage.class);
     private final Bucket bucket;
+
+    public GoogleCloudStorage(Bucket bucket) {
+        this.bucket = bucket;
+    }
 
     @Override
     protected void internalStore(final StorageObject storageObject) {

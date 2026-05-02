@@ -1,13 +1,18 @@
 package com.peluware.storage;
 
-import lombok.experimental.UtilityClass;
 import org.apache.tika.Tika;
 
+import java.io.IOException;
+import java.io.InputStream;
 
-@UtilityClass
+
 public final class StorageUtils {
 
     private static final Tika TIKA = new Tika();
+
+    private StorageUtils() {
+        throw new UnsupportedOperationException("utility class");
+    }
 
     public static String normalizeDirectory(String directory) {
         if (directory.isBlank() || directory.equals("/")) return "";
@@ -37,8 +42,12 @@ public final class StorageUtils {
         return TIKA.detect(filename);
     }
 
-    public static String detectContentType(byte[] header) {
-        return TIKA.detect(header);
+    public static String detectContentType(byte[] prefix) {
+        return TIKA.detect(prefix);
+    }
+
+    public static String detectContentType(InputStream header, String filename) throws IOException {
+        return TIKA.detect(header, filename);
     }
 
     public static String extractDirectory(String path) {

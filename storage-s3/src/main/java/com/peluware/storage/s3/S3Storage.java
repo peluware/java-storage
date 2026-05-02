@@ -2,8 +2,9 @@ package com.peluware.storage.s3;
 
 import com.peluware.storage.*;
 import com.peluware.storage.exceptions.StorageObjectNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -16,11 +17,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.*;
+import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.guessContentType;
 
-@Slf4j
 public class S3Storage extends Storage {
 
+    private static final Logger log = LoggerFactory.getLogger(S3Storage.class);
     private final S3Client client;
     private final @Nullable S3Presigner presigner;
     private final String bucketName;
