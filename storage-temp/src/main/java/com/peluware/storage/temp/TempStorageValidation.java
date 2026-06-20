@@ -111,6 +111,48 @@ public interface TempStorageValidation {
     }
 
     /**
+     * Valida que el nombre de archivo del {@code targetPath} sea exactamente el esperado.
+     * La comparación es sensible a mayúsculas.
+     * <p>
+     * Complementa a {@link #expectedDirectory}: úsalos juntos cuando necesites controlar
+     * tanto el directorio como el nombre, sin fijar la ruta completa.
+     *
+     * @param expectedFileName nombre de archivo esperado, incluyendo extensión (ej. {@code "avatar.jpg"})
+     * @throws TempStorageValidationException si el nombre no coincide
+     */
+    static TempStorageValidation expectedFileName(String expectedFileName) {
+        return (ticket, storage) -> {
+            var actual = StorageUtils.extractFilename(ticket.getTargetPath());
+            if (!actual.equals(expectedFileName)) {
+                throw new TempStorageValidationException(
+                    "Expected file name '" + expectedFileName + "' but was '" + actual + "'"
+                );
+            }
+        };
+    }
+
+    /**
+     * Valida que el nombre de archivo del {@code targetPath}, sin extensión, sea exactamente el esperado.
+     * La comparación es sensible a mayúsculas.
+     * <p>
+     * Útil cuando el slot de destino tiene un nombre fijo, pero el formato puede variar
+     * (ej. {@code "avatar"} permite tanto {@code "avatar.jpg"} como {@code "avatar.webp"}).
+     *
+     * @param expectedBaseName nombre base esperado, sin extensión (ej. {@code "avatar"})
+     * @throws TempStorageValidationException si el nombre base no coincide
+     */
+    static TempStorageValidation expectedBaseName(String expectedBaseName) {
+        return (ticket, storage) -> {
+            var actual = StorageUtils.extractBaseName(ticket.getTargetPath());
+            if (!actual.equals(expectedBaseName)) {
+                throw new TempStorageValidationException(
+                    "Expected file base name '" + expectedBaseName + "' but was '" + actual + "'"
+                );
+            }
+        };
+    }
+
+    /**
      * Valida que el tamaño del archivo temporal no supere el límite indicado.
      * Consulta el tamaño real desde el storage sin descargar el contenido.
      *

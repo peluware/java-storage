@@ -64,6 +64,12 @@ public final class StorageUtils {
         return dot >= 0 ? filename.substring(dot) : "";
     }
 
+    public static String extractBaseName(String path) {
+        var filename = extractFilename(path);
+        var ext = extractExtension(filename);
+        return ext.isEmpty() ? filename : filename.substring(0, filename.length() - ext.length());
+    }
+
     public static void removeQuietly(Storage storage, @Nullable String path) {
         if (path == null) return;
         try {

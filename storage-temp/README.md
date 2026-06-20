@@ -31,7 +31,7 @@ Client                Backend              Storage (S3/GCS/…)
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-temp</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 </dependency>
 ```
 
@@ -121,6 +121,8 @@ String finalPath = tempStorage.confirm(ticket,
 | `composite(v1, v2, …)` | Runs validations in order, fails on first error |
 | `expectedDirectory(dir)` | Target path must be in the given directory |
 | `expectedPath(path)` | Target path must match exactly |
+| `expectedFileName(name)` | File name (with extension) must match exactly |
+| `expectedBaseName(name)` | File name without extension must match (allows any format, e.g. `"avatar"` accepts `"avatar.jpg"` or `"avatar.webp"`) |
 | `expectedExtension(exts…)` | Target file extension must be one of the allowed values |
 | `maxFileSize(bytes)` | File size must not exceed the limit (reads metadata, not content) |
 

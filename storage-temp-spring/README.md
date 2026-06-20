@@ -14,7 +14,7 @@ Storage backends (S3, GCS, disk) are not transactional. If you confirm a file up
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-temp-spring</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 </dependency>
 ```
 

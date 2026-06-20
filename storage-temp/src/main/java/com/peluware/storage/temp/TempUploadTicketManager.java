@@ -12,12 +12,6 @@ import java.util.List;
 public interface TempUploadTicketManager {
 
     /**
-     * Crea una nueva instancia de {@link TempUploadTicket} sin persistirla.
-     * Los campos se asignan externamente antes de llamar a {@link #saveTicket}.
-     */
-    TempUploadTicket newTicket();
-
-    /**
      * Persiste el ticket en el medio de almacenamiento.
      *
      * @param ticket ticket a guardar
