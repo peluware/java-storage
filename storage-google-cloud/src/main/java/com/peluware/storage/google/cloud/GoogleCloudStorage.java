@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
-import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.newStoredObject;
 import static com.peluware.storage.StorageUtils.guessContentType;
 
 public class GoogleCloudStorage extends Storage {
@@ -61,7 +61,7 @@ public class GoogleCloudStorage extends Storage {
             contentLength = blobSize;
         }
 
-        return Optional.of(constructStoredFile(
+        return Optional.of(StorageUtils.newStoredObject(
             () -> {
                 var reader = blob.reader();
                 if (range != null) {
@@ -102,7 +102,7 @@ public class GoogleCloudStorage extends Storage {
                     ? blob.getContentType()
                     : guessContentType(filename);
 
-                return constructStoredFile(
+                return StorageUtils.newStoredObject(
                     () -> Channels.newInputStream(blob.reader()),
                     blob.getSize(),
                     filename,

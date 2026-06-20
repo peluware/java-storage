@@ -208,30 +208,29 @@ public abstract class Storage implements AutoCloseable {
         return exists(request.getFileName(), request.getDirectory());
     }
 
-    public boolean exists(String filename, String path) {
-        return internalExists(new StorageRequest(path, filename));
+    public boolean exists(String filename, String directory) {
+        return internalExists(new StorageRequest(directory, filename));
     }
 
     /**
      * Elimina un archivo almacenado a partir de su ruta completa
      *
-     * @param fullPath Ruta completa del archivo
+     * @param path Ruta completa del archivo
      * @throws IOException Si ocurre un error de lectura o escritura al eliminar el archivo
      */
-    public void remove(String fullPath) throws IOException {
-        var request = StorageRequest.fromPath(fullPath);
-        remove(request.getFileName(), request.getDirectory());
+    public void remove(String path) throws IOException {
+        internalRemove(StorageRequest.fromPath(path));
     }
 
     /**
      * Elimina un archivo almacenado a partir de su nombre y ruta
      *
      * @param filename Nombre del archivo
-     * @param path     Ruta donde se encuentra el archivo
+     * @param directory     Ruta donde se encuentra el archivo
      * @throws IOException Si ocurre un error de lectura o escritura al eliminar el archivo
      */
-    public void remove(String filename, String path) throws IOException {
-        internalRemove(new StorageRequest(path, filename));
+    public void remove(String filename, String directory) throws IOException {
+        internalRemove(new StorageRequest(directory, filename));
     }
 
 

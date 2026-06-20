@@ -3,8 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <name>Storage Google Cloud</name>
-    <artifactId>storage-disk</artifactId>
+
+    <name>Storage Temp for Spring</name>
+    <artifactId>storage-temp-spring</artifactId>
 
     <parent>
         <groupId>com.peluware</groupId>
@@ -20,7 +21,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>storage-core</artifactId>
+            <artifactId>storage-temp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>7.0.8</version>
         </dependency>
     </dependencies>
 

@@ -10,13 +10,9 @@ import java.io.InputStream;
 public class StoredObject {
 
     private final String directory;
-
     private final String fileName;
-
     private final String contentType;
-
     private final long fileSize;
-
     private final StorageContentLoader loader;
 
     public StoredObject(String directory, String fileName, String contentType, long fileSize, StorageContentLoader loader) {

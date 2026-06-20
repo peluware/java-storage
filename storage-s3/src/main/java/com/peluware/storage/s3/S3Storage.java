@@ -17,7 +17,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.newStoredObject;
 import static com.peluware.storage.StorageUtils.guessContentType;
 
 public class S3Storage extends Storage {
@@ -79,7 +79,7 @@ public class S3Storage extends Storage {
                 ? meta.contentType()
                 : guessContentType(request.getFileName());
 
-            return Optional.of(constructStoredFile(
+            return Optional.of(StorageUtils.newStoredObject(
                 () -> response,
                 meta.contentLength(),
                 request.getFileName(),
@@ -122,7 +122,7 @@ public class S3Storage extends Storage {
             .map(obj -> {
                 var key = obj.key();
                 var filename = key.substring(prefix.length());
-                return constructStoredFile(
+                return newStoredObject(
                     () -> client.getObject(r -> r.bucket(bucketName).key(key)),
                     obj.size(),
                     filename,

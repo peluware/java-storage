@@ -8,7 +8,6 @@ public class StorageObjectRef {
 
     private final String directory;
     private final String fileName;
-
     private final String path;
 
     public StorageObjectRef(String directory, String fileName) {

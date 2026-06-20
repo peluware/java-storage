@@ -1,6 +1,7 @@
 package com.peluware.storage;
 
 import org.apache.tika.Tika;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +25,12 @@ public final class StorageUtils {
         return path.isEmpty() ? filename : path + "/" + filename;
     }
 
-    public static StoredObject constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory, String contentType) {
+    public static StoredObject newStoredObject(StorageContentLoader loader, long fileSize, String filename, String directory, String contentType) {
         return new StoredObject(directory, filename, contentType, fileSize, loader);
     }
 
-    public static StoredObject constructStoredFile(StorageContentLoader loader, long fileSize, String filename, String directory) {
-        return constructStoredFile(
+    public static StoredObject newStoredObject(StorageContentLoader loader, long fileSize, String filename, String directory) {
+        return newStoredObject(
             loader,
             fileSize,
             filename,
@@ -61,5 +62,20 @@ public final class StorageUtils {
     public static String extractExtension(String filename) {
         var dot = filename.lastIndexOf('.');
         return dot >= 0 ? filename.substring(dot) : "";
+    }
+
+    public static void removeQuietly(Storage storage, @Nullable String path) {
+        if (path == null) return;
+        try {
+            storage.remove(path);
+        } catch (IOException ignored) {
+        }
+    }
+
+    public static void removeQuietly(Storage storage, @Nullable String @Nullable ... paths) {
+        if (paths == null) return;
+        for (var path : paths) {
+            removeQuietly(storage, path);
+        }
     }
 }

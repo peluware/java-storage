@@ -77,7 +77,7 @@ public final class GridFSStorage extends Storage {
             ? (range.isOpenEnd() ? gridFSFile.getLength() - range.start() : range.end() - range.start() + 1)
             : gridFSFile.getLength();
 
-        return Optional.of(constructStoredFile(
+        return Optional.of(newStoredObject(
             () -> {
                 if (range != null) {
                     var raw = operations.getResource(gridFSFile).getInputStream();
@@ -113,7 +113,7 @@ public final class GridFSStorage extends Storage {
             var contentType = metadata != null && metadata.containsKey("_contentType")
                 ? metadata.getString("_contentType")
                 : guessContentType(file.getFilename());
-            entries.add(constructStoredFile(
+            entries.add(newStoredObject(
                 () -> operations.getResource(file).getInputStream(),
                 file.getLength(),
                 file.getFilename(),

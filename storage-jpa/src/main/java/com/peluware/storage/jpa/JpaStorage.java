@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.newStoredObject;
 import static com.peluware.storage.StorageUtils.guessContentType;
 
 public final class JpaStorage extends Storage {
@@ -68,7 +68,7 @@ public final class JpaStorage extends Storage {
                 content = rawContent;
             }
 
-            return constructStoredFile(
+            return StorageUtils.newStoredObject(
                 () -> new ByteArrayInputStream(content),
                 content.length,
                 dbFile.getOriginalFileName(),
@@ -115,7 +115,7 @@ public final class JpaStorage extends Storage {
         )).where(cb.equal(root.get("directory"), directory));
 
         return entityManager.createQuery(cq).getResultList().stream()
-            .map(info -> constructStoredFile(
+            .map(info -> StorageUtils.newStoredObject(
                 () -> {
                     var raw = entityManager.createQuery("SELECT f.content FROM FileStored f WHERE f.originalFileName = :filename AND f.directory = :directory", byte[].class)
                         .setParameter("filename", info.getOriginalFileName())

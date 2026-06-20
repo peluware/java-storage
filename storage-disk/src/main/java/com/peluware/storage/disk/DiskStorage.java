@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peluware.storage.StorageUtils.constructStoredFile;
+import static com.peluware.storage.StorageUtils.newStoredObject;
 import static java.lang.System.getProperty;
 
 public class DiskStorage extends Storage {
@@ -94,7 +94,7 @@ public class DiskStorage extends Storage {
             return raw;
         };
 
-        return Optional.of(constructStoredFile(
+        return Optional.of(newStoredObject(
             loader,
             contentLength,
             request.getFileName(),
@@ -142,7 +142,7 @@ public class DiskStorage extends Storage {
                 if (!Files.isRegularFile(file)) continue;
                 var filename = file.getFileName().toString();
 
-                entries.add(constructStoredFile(
+                entries.add(newStoredObject(
                     () -> Files.newInputStream(file),
                     Files.size(file),
                     filename,

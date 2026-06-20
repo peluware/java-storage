@@ -33,8 +33,7 @@ public class FileStored {
     @Lob
     private byte @Nullable [] content;
 
-    public FileStored(UUID id, Long contentLength, String contentType, String originalFileName, String directory, LocalDateTime uploadedAt, byte @Nullable [] content) {
-        this.id = id;
+    public FileStored(Long contentLength, String contentType, String originalFileName, String directory, LocalDateTime uploadedAt, byte @Nullable [] content) {
         this.contentLength = contentLength;
         this.contentType = contentType;
         this.originalFileName = originalFileName;
@@ -123,7 +122,6 @@ public class FileStored {
     }
 
     public static class FileStoredBuilder {
-        private UUID id;
         private Long contentLength;
         private String contentType;
         private String originalFileName;
@@ -132,11 +130,6 @@ public class FileStored {
         private byte @Nullable [] content;
 
         FileStoredBuilder() {
-        }
-
-        public FileStoredBuilder id(UUID id) {
-            this.id = id;
-            return this;
         }
 
         public FileStoredBuilder contentLength(Long contentLength) {
@@ -170,7 +163,7 @@ public class FileStored {
         }
 
         public FileStored build() {
-            return new FileStored(this.id, this.contentLength, this.contentType, this.originalFileName, this.directory, this.uploadedAt, this.content);
+            return new FileStored(this.contentLength, this.contentType, this.originalFileName, this.directory, this.uploadedAt, this.content);
         }
     }
 }
