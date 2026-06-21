@@ -51,12 +51,16 @@ public class TempStorage {
         this(tempDir, storage, ticketManager, DEFAULT_CONTENT_TYPE_DETECTION_BYTES);
     }
 
-    /** Genera el identificador único del ticket. Puede sobreescribirse para cambiar la estrategia. */
+    /**
+     * Genera el identificador único del ticket. Puede sobreescribirse para cambiar la estrategia.
+     */
     protected String generateTicket() {
         return UUID.randomUUID().toString();
     }
 
-    /** Genera el nombre aleatorio del archivo temporal. Puede sobreescribirse para cambiar la estrategia. */
+    /**
+     * Genera el nombre aleatorio del archivo temporal. Puede sobreescribirse para cambiar la estrategia.
+     */
     protected String randomTempFileName() {
         return UUID.randomUUID().toString();
     }
@@ -79,17 +83,14 @@ public class TempStorage {
             .fileName(randomTempFileName() + extension)
             .build();
 
-        var now = Instant.now();
-        var expiresAt = now.plus(duration);
-
-        var uploadTicket = newTempUploadTicket(ref, ticket, now, expiresAt);
+        var uploadTicket = newTempUploadTicket(ref, tempRef, ticket, duration);
 
         ticketManager.saveTicket(uploadTicket);
 
         var uploadUrl = storage.generateUploadSignedUrl(tempRef, duration);
         var deleteUrl = storage.generateDeleteSignedUrl(tempRef, duration);
 
-        return new TempUploadTickets(uploadUrl, deleteUrl, ticket, expiresAt);
+        return new TempUploadTickets(uploadUrl, deleteUrl, ticket, uploadTicket.getExpiresAt());
     }
 
     /**
@@ -122,7 +123,7 @@ public class TempStorage {
      * @param validation validación a aplicar antes de mover el archivo
      * @return ruta final donde quedó almacenado el archivo
      * @throws TempUploadTicketNotFoundException      si el ticket no existe o ha expirado
-     * @throws TempStorageValidationException     si la validación falla
+     * @throws TempStorageValidationException         si la validación falla
      * @throws TempUploadContentTypeMismatchException si el content type real no coincide con el esperado
      * @throws TempUploadFileNotFoundException        si el archivo temporal no existe en el storage
      */
@@ -204,7 +205,11 @@ public class TempStorage {
         ticketManager.deleteTickets(expired);
     }
 
-    private TempUploadTicket newTempUploadTicket(StorageUploadRef ref, String ticket, Instant now, Instant expiresAt) {
+    private TempUploadTicket newTempUploadTicket(StorageUploadRef ref, StorageUploadRef tempRef, String ticket, Duration duration) {
+
+        var now = Instant.now();
+        var expiresAt = now.plus(duration);
+
         return new TempUploadTicket() {
 
             @Override
@@ -224,7 +229,7 @@ public class TempStorage {
 
             @Override
             public String getTempPath() {
-                return tempDir;
+                return tempRef.getPath();
             }
 
             @Override

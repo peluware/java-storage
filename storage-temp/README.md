@@ -31,7 +31,7 @@ Client                Backend              Storage (S3/GCS/…)
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-temp</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 </dependency>
 ```
 
