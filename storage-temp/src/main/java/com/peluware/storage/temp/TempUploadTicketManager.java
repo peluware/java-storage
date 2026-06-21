@@ -28,12 +28,13 @@ public interface TempUploadTicketManager {
     TempUploadTicket findByTicket(String ticket) throws TempUploadTicketNotFoundException;
 
     /**
-     * Devuelve todos los tickets cuya fecha de expiración sea anterior al instante indicado.
+     * Devuelve todos los tickets cuyo {@link TempUploadTicket#getPurgeAt()} sea anterior al instante indicado.
+     * Estos tickets y sus archivos temporales son candidatos a ser eliminados por {@link TempStorage#purgeExpired}.
      *
      * @param instant instante de referencia
-     * @return lista de tickets expirados
+     * @return lista de tickets purgables
      */
-    List<? extends TempUploadTicket> findExpiredBefore(Instant instant);
+    List<? extends TempUploadTicket> findPurgeableBefore(Instant instant);
 
     /**
      * Elimina un ticket del medio de almacenamiento.

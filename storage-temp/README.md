@@ -31,7 +31,7 @@ Client                Backend              Storage (S3/GCS/…)
 <dependency>
     <groupId>com.peluware</groupId>
     <artifactId>storage-temp</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
 </dependency>
 ```
 
@@ -59,8 +59,8 @@ public class MyTicketManager implements TempUploadTicketManager {
     }
 
     @Override
-    public List<? extends TempUploadTicket> findExpiredBefore(Instant instant) {
-        return repo.findByExpiresAtBefore(instant);
+    public List<? extends TempUploadTicket> findPurgeableBefore(Instant instant) {
+        return repo.findByPurgeAtBefore(instant);
     }
 
     @Override

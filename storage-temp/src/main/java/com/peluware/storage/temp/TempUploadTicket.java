@@ -24,8 +24,19 @@ public interface TempUploadTicket {
     /** Ruta temporal donde el cliente subió el archivo. */
     String getTempPath();
 
-    /** Instante a partir del cual el ticket se considera expirado. */
+    /**
+     * Instante hasta el cual las URLs firmadas (PUT/DELETE) son válidas.
+     * No se usa para validar {@link TempStorage#confirm} — el usuario puede confirmar
+     * en cualquier momento mientras el temporal no haya sido purgado.
+     */
     Instant getExpiresAt();
+
+    /**
+     * Instante a partir del cual el archivo temporal puede ser eliminado por {@link TempStorage#purgeExpired}.
+     * Debe ser mayor que {@link #getExpiresAt()} para dar margen al usuario de confirmar
+     * después de que las URLs hayan vencido.
+     */
+    Instant getPurgeAt();
 
     /**
      * Content type esperado del archivo, usado para validar el contenido real

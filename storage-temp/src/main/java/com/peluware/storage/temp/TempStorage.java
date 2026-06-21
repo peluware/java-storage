@@ -67,14 +67,30 @@ public class TempStorage {
 
     /**
      * Genera un ticket de subida temporal con las URL firmadas para subir y eliminar el archivo.
-     * El archivo se almacenará provisionalmente en {@code tempDir} con un nombre aleatorio
-     * que preserva la extensión original.
+     * El {@code purgeDuration} se calcula automáticamente como {@code urlDuration + 4 horas},
+     * dando margen al usuario para completar y enviar el formulario sin re-subir el archivo.
      *
-     * @param ref      referencia con el nombre, directorio destino y metadatos opcionales del archivo
-     * @param duration tiempo de validez del ticket y las URL firmadas
-     * @return {@link TempUploadTickets} con las URL firmadas, el ticket y la fecha de expiración
+     * @param ref         referencia con el nombre, directorio destino y metadatos opcionales del archivo
+     * @param urlDuration tiempo de validez de las URL's firmadas para PUT/DELETE
+     * @return {@link TempUploadTickets} con las URL firmadas, el ticket y la fecha de expiración de las URL's
      */
-    public TempUploadTickets generateTickets(StorageUploadRef ref, Duration duration) {
+    public TempUploadTickets generateTickets(StorageUploadRef ref, Duration urlDuration) {
+        return generateTickets(ref, urlDuration, urlDuration.plus(Duration.ofHours(4)));
+    }
+
+    /**
+     * Genera un ticket de subida temporal con tiempos desacoplados para las URL's firmadas y la purga.
+     * <p>
+     * {@code urlDuration} debe ser corto (minutos): cubre solo el momento de la subida directa al backend.
+     * {@code purgeDuration} puede ser largo (horas): da margen al usuario para confirmar desde el formulario
+     * sin obligarlo a re-subir el archivo si se demoró.
+     *
+     * @param ref          referencia con el nombre, directorio destino y metadatos opcionales del archivo
+     * @param urlDuration  tiempo de validez de las URL's firmadas para PUT/DELETE
+     * @param purgeDuration tiempo tras el cual el temporal puede ser eliminado por {@link #purgeExpired}
+     * @return {@link TempUploadTickets} con las URL firmadas, el ticket y la fecha de expiración de las URL's
+     */
+    public TempUploadTickets generateTickets(StorageUploadRef ref, Duration urlDuration, Duration purgeDuration) {
         var extension = extractExtension(ref.getFileName());
         var ticket = generateTicket();
 
@@ -83,12 +99,12 @@ public class TempStorage {
             .fileName(randomTempFileName() + extension)
             .build();
 
-        var uploadTicket = newTempUploadTicket(ref, tempRef, ticket, duration);
+        var uploadTicket = newTempUploadTicket(ref, tempRef, ticket, urlDuration, purgeDuration);
 
         ticketManager.saveTicket(uploadTicket);
 
-        var uploadUrl = storage.generateUploadSignedUrl(tempRef, duration);
-        var deleteUrl = storage.generateDeleteSignedUrl(tempRef, duration);
+        var uploadUrl = storage.generateUploadSignedUrl(tempRef, urlDuration);
+        var deleteUrl = storage.generateDeleteSignedUrl(tempRef, urlDuration);
 
         return new TempUploadTickets(uploadUrl, deleteUrl, ticket, uploadTicket.getExpiresAt());
     }
@@ -129,10 +145,6 @@ public class TempStorage {
      */
     public final String confirm(String ticket, TempStorageValidation validation) throws IOException, TempUploadTicketNotFoundException, TempStorageValidationException {
         var uploadTicket = ticketManager.findByTicket(ticket);
-
-        if (Instant.now().isAfter(uploadTicket.getExpiresAt())) {
-            throw new TempUploadTicketNotFoundException(ticket);
-        }
 
         validation.validate(uploadTicket, storage);
 
@@ -195,7 +207,7 @@ public class TempStorage {
      * El borrado de tickets se realiza en lote.
      */
     public void purgeExpired() throws IOException {
-        var expired = ticketManager.findExpiredBefore(Instant.now());
+        var expired = ticketManager.findPurgeableBefore(Instant.now());
         for (var uploadTicket : expired) {
             try {
                 storage.remove(uploadTicket.getTempPath());
@@ -205,10 +217,11 @@ public class TempStorage {
         ticketManager.deleteTickets(expired);
     }
 
-    private TempUploadTicket newTempUploadTicket(StorageUploadRef ref, StorageUploadRef tempRef, String ticket, Duration duration) {
+    private TempUploadTicket newTempUploadTicket(StorageUploadRef ref, StorageUploadRef tempRef, String ticket, Duration urlDuration, Duration purgeDuration) {
 
         var now = Instant.now();
-        var expiresAt = now.plus(duration);
+        var expiresAt = now.plus(urlDuration);
+        var purgeAt = now.plus(purgeDuration);
 
         return new TempUploadTicket() {
 
@@ -235,6 +248,11 @@ public class TempStorage {
             @Override
             public Instant getExpiresAt() {
                 return expiresAt;
+            }
+
+            @Override
+            public Instant getPurgeAt() {
+                return purgeAt;
             }
 
             @Override
